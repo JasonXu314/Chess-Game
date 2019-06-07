@@ -1,8 +1,9 @@
 const board = [[], [], [], [], [], [], [], []];
 var boardElement;
 var g;
-var shownPiece;
+var shownPiece = null;
 const shownLocations= [];
+var material = 0;
 
 window.addEventListener('load', (e) => {
     boardElement = document.getElementById('board');
@@ -39,6 +40,10 @@ window.addEventListener('load', (e) => {
                     let name = elementName.slice(0, elementName.length - 4).toLowerCase();
                     let piece = name.split('_')[0];
                     let color = name.split('_')[1];
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
                     shownPiece = e.toElement;
                     showPlaces(x, y, piece, color);
                 });
@@ -47,22 +52,24 @@ window.addEventListener('load', (e) => {
     });
 });
 
+document.addEventListener('click', (e) => {
+    if (e.target === document.body || e.target === boardElement)
+    {
+        shownPiece = null;
+        shownLocations.forEach((location) => {
+            g.removeChild(location);
+            shownLocations.shift();
+        });
+    }
+});
+
 function showPlaces(x, y, piece, color)
 {
     let up = (color === 'white');
     switch (piece)
     {
         case ('pawn'):
-            if (board[up ? y/50 - 1 : y/50 + 1][x/50] === null)
-            {
-                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                moveLocation.setAttribute('cx', x + 25);
-                moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-                moveLocation.setAttribute('r', 10);
-                moveLocation.setAttribute('class', 'moveLocation');
-                g.appendChild(moveLocation);
-                shownLocations.push(moveLocation);
-            }
+            showPawn(x, y, up);
             break;
         case ('knight'):
             if (board[up ? y/50 - 2 : y/50 + 2][x/50 + 1] === null)
@@ -72,7 +79,9 @@ function showPlaces(x, y, piece, color)
                 moveLocation.setAttribute('cy', 25 + (up ? y - 100 : y + 100));
                 moveLocation.setAttribute('r', 10);
                 moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
                 g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
             }
             if (board[up ? y/50 - 2 : y/50 + 2][x/50 - 1] === null)
             {
@@ -81,7 +90,9 @@ function showPlaces(x, y, piece, color)
                 moveLocation.setAttribute('cy', 25 + (up ? y - 100 : y + 100));
                 moveLocation.setAttribute('r', 10);
                 moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
             }
             break;
         case ('rook'):
@@ -98,6 +109,100 @@ function showPlaces(x, y, piece, color)
     }
 }
 
+function showPawn(x, y, up)
+{
+    if (board[up ? y/50 - 1 : y/50 + 1][x/50] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x + 25);
+        moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
+            board[y/50][x/50] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+        if (board[up ? y/50 - 2 : y/50 + 2][x/50] === null && y/50 === (up ? 6 : 1))
+        {
+            let moveLocation2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            moveLocation2.setAttribute('cx', x + 25);
+            moveLocation2.setAttribute('cy', 25 + (up ? y - 100 : y + 100));
+            moveLocation2.setAttribute('r', 10);
+            moveLocation2.setAttribute('class', 'moveLocation');
+            moveLocation2.setAttribute('onclick', '"event.stopPropogation()"');
+            moveLocation2.addEventListener('click', (e) => {
+                shownPiece.setAttribute('x', moveLocation2.getAttribute('cx') - 25);
+                shownPiece.setAttribute('y', moveLocation2.getAttribute('cy') - 25);
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                board[up ? y/50 - 2 : y/50 + 2][x/50] = board[y/50][x/50];
+                board[y/50][x/50] = null;
+            });
+            g.appendChild(moveLocation2);
+            shownLocations.push(moveLocation2);
+        }
+    }
+    if (board[up ? y/50 -1 : y/50 + 1][x/50 + 1] !== null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x + 75);
+        moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[up ? y/50 - 1 : y/50 + 1][x/50 + 1]);
+            board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = null;
+            board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = board[y/50][x/50];
+            board[y/50][x/50] = null;
+            document.getElementById('materialcounter').textContent  = 'Material: ' + ++material;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (board[up ? y/50 -1 : y/50 + 1][x/50 - 1] !== null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x - 25);
+        moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[up ? y/50 - 1 : y/50 + 1][x/50 - 1]);
+            board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = null;
+            board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = board[y/50][x/50];
+            board[y/50][x/50] = null;
+            document.getElementById('materialcounter').textContent  = 'Material: ' + ++material;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+}
+
 function showKnight(x, y)
 {
 
@@ -105,7 +210,7 @@ function showKnight(x, y)
 
 function showRook(x, y)
 {
-    for (let i = x; i < 7; i++)
+    for (let i = x + 1; i < 7; i++)
     {
         if (board[y][i] !== null)
         {
@@ -116,9 +221,11 @@ function showRook(x, y)
         moveLocation.setAttribute('cy', 25 + y * 50);
         moveLocation.setAttribute('r', 10);
         moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
     }
-    for (let i = x; i >= 0; i--)
+    for (let i = x - 1; i >= 0; i--)
     {
         if (board[y][i] !== null)
         {
@@ -129,9 +236,11 @@ function showRook(x, y)
         moveLocation.setAttribute('cy', 25 + y * 50);
         moveLocation.setAttribute('r', 10);
         moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
     }
-    for (let i = y; i < 7; i++)
+    for (let i = y + 1; i < 7; i++)
     {
         if (board[i][x] !== null)
         {
@@ -142,9 +251,11 @@ function showRook(x, y)
         moveLocation.setAttribute('cy', 25 + i * 50);
         moveLocation.setAttribute('r', 10);
         moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
     }
-    for (let i = y; i >= 0; i--)
+    for (let i = y - 1; i >= 0; i--)
     {
         if (board[i][x] !== null)
         {
@@ -155,13 +266,20 @@ function showRook(x, y)
         moveLocation.setAttribute('cy', 25 + i * 50);
         moveLocation.setAttribute('r', 10);
         moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
     }
 }
 
 function showBishop(x, y)
 {
 
+}
+
+function getColor(piece)
+{
+    return piece.getAttribute('href').toLowerCase().split('_')[1];
 }
 
 function init()
@@ -174,6 +292,7 @@ function init()
         whitePiece.setAttribute('y', 300);
         whitePiece.setAttribute('width', 50);
         whitePiece.setAttribute('height', 50);
+        whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
         g.appendChild(whitePiece);
         let blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
         blackPiece.setAttribute('href', 'Pawn_Black.png');
@@ -181,6 +300,7 @@ function init()
         blackPiece.setAttribute('y', 50);
         blackPiece.setAttribute('width', 50);
         blackPiece.setAttribute('height', 50);
+        blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
         g.appendChild(blackPiece);
         board[1][i] = blackPiece;
         board[6][i] = whitePiece;
@@ -198,6 +318,7 @@ function init()
     whitePiece.setAttribute('y', 350);
     whitePiece.setAttribute('width', 50);
     whitePiece.setAttribute('height', 50);
+    whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(whitePiece);
     let blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     blackPiece.setAttribute('href', 'Rook_Black.png');
@@ -205,15 +326,17 @@ function init()
     blackPiece.setAttribute('y', 0);
     blackPiece.setAttribute('width', 50);
     blackPiece.setAttribute('height', 50);
+    blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(blackPiece);
     board[0][0] = blackPiece;
-    board[0][7] = whitePiece;
+    board[7][0] = whitePiece;
     whitePiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     whitePiece.setAttribute('href', 'Rook_White.png');
     whitePiece.setAttribute('x', 350);
     whitePiece.setAttribute('y', 350);
     whitePiece.setAttribute('width', 50);
     whitePiece.setAttribute('height', 50);
+    whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(whitePiece);
     blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     blackPiece.setAttribute('href', 'Rook_Black.png');
@@ -221,6 +344,7 @@ function init()
     blackPiece.setAttribute('y', 0);
     blackPiece.setAttribute('width', 50);
     blackPiece.setAttribute('height', 50);
+    blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(blackPiece);
     board[0][7] = blackPiece;
     board[7][7] = whitePiece;
@@ -230,6 +354,7 @@ function init()
     whitePiece.setAttribute('y', 350);
     whitePiece.setAttribute('width', 50);
     whitePiece.setAttribute('height', 50);
+    whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(whitePiece);
     blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     blackPiece.setAttribute('href', 'Knight_Black.png');
@@ -237,6 +362,7 @@ function init()
     blackPiece.setAttribute('y', 0);
     blackPiece.setAttribute('width', 50);
     blackPiece.setAttribute('height', 50);
+    blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(blackPiece);
     board[0][6] = blackPiece;
     board[7][6] = whitePiece;
@@ -246,6 +372,7 @@ function init()
     whitePiece.setAttribute('y', 350);
     whitePiece.setAttribute('width', 50);
     whitePiece.setAttribute('height', 50);
+    whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(whitePiece);
     blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     blackPiece.setAttribute('href', 'Knight_Black.png');
@@ -253,6 +380,7 @@ function init()
     blackPiece.setAttribute('y', 0);
     blackPiece.setAttribute('width', 50);
     blackPiece.setAttribute('height', 50);
+    blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(blackPiece);
     board[0][1] = blackPiece;
     board[7][1] = whitePiece;
@@ -262,6 +390,7 @@ function init()
     whitePiece.setAttribute('y', 350);
     whitePiece.setAttribute('width', 50);
     whitePiece.setAttribute('height', 50);
+    whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(whitePiece);
     blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     blackPiece.setAttribute('href', 'Bishop_Black.png');
@@ -269,6 +398,7 @@ function init()
     blackPiece.setAttribute('y', 0);
     blackPiece.setAttribute('width', 50);
     blackPiece.setAttribute('height', 50);
+    blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(blackPiece);
     board[0][5] = blackPiece;
     board[7][5] = whitePiece;
@@ -278,6 +408,7 @@ function init()
     whitePiece.setAttribute('y', 350);
     whitePiece.setAttribute('width', 50);
     whitePiece.setAttribute('height', 50);
+    whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(whitePiece);
     blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     blackPiece.setAttribute('href', 'Bishop_Black.png');
@@ -285,6 +416,7 @@ function init()
     blackPiece.setAttribute('y', 0);
     blackPiece.setAttribute('width', 50);
     blackPiece.setAttribute('height', 50);
+    blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(blackPiece);
     board[0][2] = blackPiece;
     board[7][2] = whitePiece;
@@ -294,6 +426,7 @@ function init()
     whitePiece.setAttribute('y', 350);
     whitePiece.setAttribute('width', 50);
     whitePiece.setAttribute('height', 50);
+    whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(whitePiece);
     blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     blackPiece.setAttribute('href', 'King_Black.png');
@@ -301,6 +434,7 @@ function init()
     blackPiece.setAttribute('y', 0);
     blackPiece.setAttribute('width', 50);
     blackPiece.setAttribute('height', 50);
+    blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(blackPiece);
     board[0][4] = blackPiece;
     board[7][4] = whitePiece;
@@ -310,6 +444,7 @@ function init()
     whitePiece.setAttribute('y', 350);
     whitePiece.setAttribute('width', 50);
     whitePiece.setAttribute('height', 50);
+    whitePiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(whitePiece);
     blackPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     blackPiece.setAttribute('href', 'Queen_Black.png');
@@ -317,6 +452,7 @@ function init()
     blackPiece.setAttribute('y', 0);
     blackPiece.setAttribute('width', 50);
     blackPiece.setAttribute('height', 50);
+    blackPiece.setAttribute('onclick', '"event.stopPropogation()"');
     g.appendChild(blackPiece);
     board[0][3] = blackPiece;
     board[7][3] = whitePiece;
