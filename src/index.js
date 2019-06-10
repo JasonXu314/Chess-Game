@@ -14,29 +14,24 @@ const rookMoved = {
     wLeft: false,
     wRight: false
 }
+var moveColor = 'white';
+const epMove = {
+    x: -1,
+    y: -1
+}
 
 window.addEventListener('load', (e) => {
     boardElement = document.getElementById('board');
     g = document.getElementById('g');
-    for (let i = 1; i < 8; i++)
+    for (let i = 0; i < 64; i++)
     {
-        let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', i * 50);
-        line.setAttribute('y1', 0);
-        line.setAttribute('x2', i * 50);
-        line.setAttribute('y2', 400);
-        line.setAttribute('style', 'stroke:black;stroke-width:1');
-        g.appendChild(line);
-    }
-    for (let i = 1; i < 8; i++)
-    {
-        let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', 0);
-        line.setAttribute('y1', i * 50);
-        line.setAttribute('x2', 400);
-        line.setAttribute('y2', i * 50);
-        line.setAttribute('style', 'stroke:black;stroke-width:1');
-        g.appendChild(line);
+        let tile = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        tile.setAttribute('x', Math.floor(i/8) * 50);
+        tile.setAttribute('y', (i % 8) * 50);
+        tile.setAttribute('width', '50');
+        tile.setAttribute('height', '50');
+        tile.setAttribute('fill', (Math.floor(i/8) + i % 8) % 2 == 0 ? 'white' : 'black');
+        g.appendChild(tile);
     }
     init();
     board.forEach((arr) => {
@@ -75,11 +70,14 @@ document.addEventListener('click', (e) => {
 
 function showPlaces(x, y, piece, color)
 {
-    let up = (color === 'white');
+    if (color !== moveColor)
+    {
+        return;
+    }
     switch (piece)
     {
         case ('pawn'):
-            showPawn(x, y, up);
+            showPawn(x, y, color);
             break;
         case ('knight'):
             showKnight(x, y, color);
@@ -95,18 +93,19 @@ function showPlaces(x, y, piece, color)
             showBishop(x/50, y/50, color);
             break;
         case ('king'):
-            showKing(x/50, y/50, color);
+           showKing(x/50, y/50, color);
     }
 }
 
-function showPawn(x, y, up)
+function showPawn(x, y, color)
 {
+    let up = color === 'white';
     if (board[up ? y/50 - 1 : y/50 + 1][x/50] === null)
     {
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x + 25);
         moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -118,6 +117,7 @@ function showPawn(x, y, up)
             }
             board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -126,7 +126,7 @@ function showPawn(x, y, up)
             let moveLocation2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation2.setAttribute('cx', x + 25);
             moveLocation2.setAttribute('cy', 25 + (up ? y - 100 : y + 100));
-            moveLocation2.setAttribute('r', 10);
+            moveLocation2.setAttribute('r', 12);
             moveLocation2.setAttribute('class', 'moveLocation');
             moveLocation2.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation2.addEventListener('click', (e) => {
@@ -137,19 +137,21 @@ function showPawn(x, y, up)
                     g.removeChild(shownLocations.shift());
                 }
                 board[up ? y/50 - 2 : y/50 + 2][x/50] = board[y/50][x/50];
-                // board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
                 board[y/50][x/50] = null;
+                epMove.x = x/50;
+                epMove.y = up ? y/50 - 2 : y/50 + 2;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
             });
             g.appendChild(moveLocation2);
             shownLocations.push(moveLocation2);
         }
     }
-    if (board[up ? y/50 -1 : y/50 + 1][x/50 + 1] !== null)
+    if (board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 + 1]) !== color)
     {
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x + 75);
         moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -161,25 +163,20 @@ function showPawn(x, y, up)
             }
             removeLocation = board[up ? y/50 - 1 : y/50 + 1][x/50 + 1];
             g.removeChild(removeLocation);
-            if (board[up ? y/50 - 2 : y/50 + 2][x/50 + 1] === removeLocation)
-            {
-                board[up ? y/50 - 2 : y/50 + 2][x/50 + 1] = null;
-            }
             board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = null;
-            board[up ? y/50 - 2 : y/50 + 2][x/50 - 1] = null;
             board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
-            // document.getElementById('materialcounter').textContent  = 'Material: ' + ++material;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
     }
-    if (board[up ? y/50 -1 : y/50 + 1][x/50 - 1] !== null)
+    if (board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 - 1]) !== color)
     {
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x - 25);
         moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -191,10 +188,59 @@ function showPawn(x, y, up)
             }
             g.removeChild(board[up ? y/50 - 1 : y/50 + 1][x/50 - 1]);
             board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = null;
-            board[up ? y/50 - 2 : y/50 + 2][x/50 - 1] = null;
             board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
-        //     document.getElementById('materialcounter').textContent  = 'Material: ' + ++material;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] == null && epMove.x === x/50 - 1 && epMove.y === y/50)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x - 25);
+        moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
+        moveLocation.setAttribute('r', 12);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y/50][x/50 - 1]);
+            board[y/50][x/50 - 1] = board[y/50][x/50];
+            board[y/50][x/50] = null;
+            epMove.x = -1;
+            epMove.y = -1;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] == null && epMove.x === x/50 + 1 && epMove.y === y/50)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x - 25);
+        moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
+        moveLocation.setAttribute('r', 12);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y/50][x/50 + 1]);
+            board[y/50][x/50 + 1] = board[y/50][x/50];
+            board[y/50][x/50] = null;
+            epMove.x = -1;
+            epMove.y = -1;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -208,7 +254,7 @@ function showKnight(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x + 75);
         moveLocation.setAttribute('cy', y + 125);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -225,6 +271,7 @@ function showKnight(x, y, color)
             }
             board[y/50 + 2][x/50 + 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -234,7 +281,7 @@ function showKnight(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x - 25);
         moveLocation.setAttribute('cy', y - 75);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -251,6 +298,7 @@ function showKnight(x, y, color)
             }
             board[y/50 - 2][x/50 - 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -260,7 +308,7 @@ function showKnight(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x - 25);
         moveLocation.setAttribute('cy', y + 125);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -277,6 +325,7 @@ function showKnight(x, y, color)
             }
             board[y/50 + 2][x/50 - 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -286,7 +335,7 @@ function showKnight(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x + 75);
         moveLocation.setAttribute('cy', y - 75);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -303,6 +352,7 @@ function showKnight(x, y, color)
             }
             board[y/50 - 2][x/50 + 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -312,7 +362,7 @@ function showKnight(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x + 125);
         moveLocation.setAttribute('cy', y + 75);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -329,6 +379,7 @@ function showKnight(x, y, color)
             }
             board[y/50 + 1][x/50 + 2] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -338,7 +389,7 @@ function showKnight(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x - 75);
         moveLocation.setAttribute('cy', y - 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -355,6 +406,7 @@ function showKnight(x, y, color)
             }
             board[y/50 - 1][x/50 - 2] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -364,7 +416,7 @@ function showKnight(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x + 125);
         moveLocation.setAttribute('cy', y - 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -381,6 +433,7 @@ function showKnight(x, y, color)
             }
             board[y/50 - 1][x/50 + 2] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -390,7 +443,7 @@ function showKnight(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x - 75);
         moveLocation.setAttribute('cy', y + 75);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -407,6 +460,7 @@ function showKnight(x, y, color)
             }
             board[y/50 + 1][x/50 - 2] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -424,7 +478,7 @@ function showRook(x, y, color)
                 let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation.setAttribute('cx', i * 50 + 25);
                 moveLocation.setAttribute('cy', y * 50 + 25);
-                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('r', 12);
                 moveLocation.setAttribute('class', 'moveLocation');
                 moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation.addEventListener('click', (e) => {
@@ -437,6 +491,7 @@ function showRook(x, y, color)
                     g.removeChild(board[y][i]);
                     board[y][i] = board[y][x];
                     board[y][x] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -446,7 +501,7 @@ function showRook(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', i * 50 + 25);
         moveLocation.setAttribute('cy', y * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -458,6 +513,7 @@ function showRook(x, y, color)
             }
             board[y][i] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -471,7 +527,7 @@ function showRook(x, y, color)
                 let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation.setAttribute('cx', i * 50 + 25);
                 moveLocation.setAttribute('cy', y * 50 + 25);
-                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('r', 12);
                 moveLocation.setAttribute('class', 'moveLocation');
                 moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation.addEventListener('click', (e) => {
@@ -484,6 +540,7 @@ function showRook(x, y, color)
                     g.removeChild(board[y][i]);
                     board[y][i] = board[y][x];
                     board[y][x] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -493,7 +550,7 @@ function showRook(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', i * 50 + 25);
         moveLocation.setAttribute('cy', y * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -505,6 +562,7 @@ function showRook(x, y, color)
             }
             board[y][i] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -518,7 +576,7 @@ function showRook(x, y, color)
                 let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation.setAttribute('cx', x * 50 + 25);
                 moveLocation.setAttribute('cy', i * 50 + 25);
-                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('r', 12);
                 moveLocation.setAttribute('class', 'moveLocation');
                 moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation.addEventListener('click', (e) => {
@@ -531,6 +589,7 @@ function showRook(x, y, color)
                     g.removeChild(board[i][x]);
                     board[i][x] = board[y][x];
                     board[y][x] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -540,7 +599,7 @@ function showRook(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x * 50 + 25);
         moveLocation.setAttribute('cy', i * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -552,6 +611,7 @@ function showRook(x, y, color)
             }
             board[i][x] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -565,7 +625,7 @@ function showRook(x, y, color)
                 let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation.setAttribute('cx', x * 50 + 25);
                 moveLocation.setAttribute('cy', i * 50 + 25);
-                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('r', 12);
                 moveLocation.setAttribute('class', 'moveLocation');
                 moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation.addEventListener('click', (e) => {
@@ -578,6 +638,7 @@ function showRook(x, y, color)
                     g.removeChild(board[i][x]);
                     board[i][x] = board[y][x];
                     board[y][x] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -587,7 +648,7 @@ function showRook(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x * 50 + 25);
         moveLocation.setAttribute('cy', i * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -599,6 +660,7 @@ function showRook(x, y, color)
             }
             board[i][x] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -616,7 +678,7 @@ function showBishop(x, y, color)
                 let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation.setAttribute('cx', (x + i) * 50 + 25);
                 moveLocation.setAttribute('cy', (y + i) * 50 + 25);
-                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('r', 12);
                 moveLocation.setAttribute('class', 'moveLocation');
                 moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation.addEventListener('click', (e) => {
@@ -629,6 +691,7 @@ function showBishop(x, y, color)
                     g.removeChild(board[y + i][x + i]);
                     board[y + i][x + i] = board[y][x];
                     board[y][x] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -638,7 +701,7 @@ function showBishop(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x + i) * 50 + 25);
         moveLocation.setAttribute('cy', (y + i) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -648,8 +711,9 @@ function showBishop(x, y, color)
             {
                 g.removeChild(shownLocations.shift());
             }
-            board[y][i] = board[y][x];
+            board[y + i][x + i] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -663,7 +727,7 @@ function showBishop(x, y, color)
                 let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation.setAttribute('cx', (x - i) * 50 + 25);
                 moveLocation.setAttribute('cy', (y - i) * 50 + 25);
-                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('r', 12);
                 moveLocation.setAttribute('class', 'moveLocation');
                 moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation.addEventListener('click', (e) => {
@@ -676,6 +740,7 @@ function showBishop(x, y, color)
                     g.removeChild(board[y - i][x - i]);
                     board[y - i][x - i] = board[y][x];
                     board[y][x] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -685,7 +750,7 @@ function showBishop(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x - i) * 50 + 25);
         moveLocation.setAttribute('cy', (y - i) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -697,6 +762,7 @@ function showBishop(x, y, color)
             }
             board[y - i][x - i] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -710,7 +776,7 @@ function showBishop(x, y, color)
                 let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation.setAttribute('cx', (x - i) * 50 + 25);
                 moveLocation.setAttribute('cy', (y + i) * 50 + 25);
-                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('r', 12);
                 moveLocation.setAttribute('class', 'moveLocation');
                 moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation.addEventListener('click', (e) => {
@@ -723,6 +789,7 @@ function showBishop(x, y, color)
                     g.removeChild(board[y + i][x - i]);
                     board[y + i][x - i] = board[y][x];
                     board[y][x] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -732,7 +799,7 @@ function showBishop(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x - i) * 50 + 25);
         moveLocation.setAttribute('cy', (y + i) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -744,6 +811,7 @@ function showBishop(x, y, color)
             }
             board[y + i][x - i] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -757,7 +825,7 @@ function showBishop(x, y, color)
                 let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation.setAttribute('cx', (x + i) * 50 + 25);
                 moveLocation.setAttribute('cy', (y - i) * 50 + 25);
-                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('r', 12);
                 moveLocation.setAttribute('class', 'moveLocation');
                 moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation.addEventListener('click', (e) => {
@@ -770,6 +838,7 @@ function showBishop(x, y, color)
                     g.removeChild(board[y - i][x + i]);
                     board[y - i][x + i] = board[y][x];
                     board[y][x] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -779,7 +848,7 @@ function showBishop(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x + i) * 50 + 25);
         moveLocation.setAttribute('cy', (y - i) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -791,6 +860,7 @@ function showBishop(x, y, color)
             }
             board[y - i][x + i] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -804,7 +874,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
         moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -817,6 +887,15 @@ function showKing(x, y, color)
             g.removeChild(board[y + 1][x + 1]);
             board[y + 1][x + 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -826,7 +905,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
         moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -838,6 +917,15 @@ function showKing(x, y, color)
             }
             board[y + 1][x + 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -847,7 +935,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
         moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -860,6 +948,15 @@ function showKing(x, y, color)
             g.removeChild(board[y - 1][x - 1]);
             board[y - 1][x - 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -869,7 +966,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
         moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -881,6 +978,15 @@ function showKing(x, y, color)
             }
             board[y - 1][x - 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -890,7 +996,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
         moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -903,6 +1009,15 @@ function showKing(x, y, color)
             g.removeChild(board[y - 1][x + 1]);
             board[y - 1][x + 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -912,7 +1027,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
         moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -924,6 +1039,15 @@ function showKing(x, y, color)
             }
             board[y - 1][x + 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -933,7 +1057,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
         moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -946,6 +1070,15 @@ function showKing(x, y, color)
             g.removeChild(board[y + 1][x - 1]);
             board[y + 1][x - 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -955,7 +1088,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
         moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -967,6 +1100,15 @@ function showKing(x, y, color)
             }
             board[y + 1][x - 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -976,7 +1118,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x * 50 + 25);
         moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -989,6 +1131,15 @@ function showKing(x, y, color)
             g.removeChild(board[y + 1][x]);
             board[y + 1][x] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -998,7 +1149,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x * 50 + 25);
         moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -1010,6 +1161,15 @@ function showKing(x, y, color)
             }
             board[y + 1][x] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -1019,7 +1179,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x * 50 + 25);
         moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -1032,6 +1192,15 @@ function showKing(x, y, color)
             g.removeChild(board[y - 1][x]);
             board[y - 1][x] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -1041,7 +1210,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x * 50 + 25);
         moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -1053,6 +1222,15 @@ function showKing(x, y, color)
             }
             board[y - 1][x] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -1062,7 +1240,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
         moveLocation.setAttribute('cy', y * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -1075,6 +1253,15 @@ function showKing(x, y, color)
             g.removeChild(board[y][x + 1]);
             board[y][x + 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -1084,7 +1271,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
         moveLocation.setAttribute('cy', y * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -1096,6 +1283,15 @@ function showKing(x, y, color)
             }
             board[y][x + 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -1105,7 +1301,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
         moveLocation.setAttribute('cy', y * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -1118,6 +1314,15 @@ function showKing(x, y, color)
             g.removeChild(board[y][x - 1]);
             board[y][x - 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -1127,7 +1332,7 @@ function showKing(x, y, color)
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
         moveLocation.setAttribute('cy', y * 50 + 25);
-        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
         moveLocation.addEventListener('click', (e) => {
@@ -1139,6 +1344,15 @@ function showKing(x, y, color)
             }
             board[y][x - 1] = board[y][x];
             board[y][x] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
+            if (color === 'white')
+            {
+                kingMoved.white = true;
+            }
+            else
+            {
+                kingMoved.black = true;
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -1152,7 +1366,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - 2) * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 10);
+            moveLocation.setAttribute('r', 12);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1168,6 +1382,15 @@ function showKing(x, y, color)
                 board[y][x - 1] = rook;
                 board[y][x] = null;
                 board[color === 'white' ? 7 : 0][0] = null;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
+                if (color === 'white')
+                {
+                    kingMoved.white = true;
+                }
+                else
+                {
+                    kingMoved.black = true;
+                }
             });
             g.appendChild(moveLocation);
             shownLocations.push(moveLocation);
@@ -1178,7 +1401,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + 2) * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 10);
+            moveLocation.setAttribute('r', 12);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1188,12 +1411,21 @@ function showKing(x, y, color)
                 {
                     g.removeChild(shownLocations.shift());
                 }
-                let rook = board[color === 'white' ? 7 : 0][0];
+                let rook = board[color === 'white' ? 7 : 0][7];
                 rook.setAttribute('x', (x + 1) * 50);
                 board[y][x + 2] = board[y][x];
                 board[y][x + 1] = rook;
                 board[y][x = null];
-                board[color === 'white' ? 7 : 0][0] = null;
+                board[color === 'white' ? 7 : 0][7] = null;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
+                if (color === 'white')
+                {
+                    kingMoved.white = true;
+                }
+                else
+                {
+                    kingMoved.black = true;
+                }
             });
             g.appendChild(moveLocation);
             shownLocations.push(moveLocation);
