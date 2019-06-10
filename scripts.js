@@ -4,6 +4,16 @@ var g;
 var shownPiece = null;
 const shownLocations= [];
 var material = 0;
+const kingMoved = {
+    white: false,
+    black: false
+}
+const rookMoved = {
+    bLeft: false,
+    bRight: false,
+    wLeft: false,
+    wRight: false
+}
 
 window.addEventListener('load', (e) => {
     boardElement = document.getElementById('board');
@@ -75,16 +85,17 @@ function showPlaces(x, y, piece, color)
             showKnight(x, y, color);
             break;
         case ('rook'):
-            showRook(x/50, y/50);
+            showRook(x/50, y/50, color);
             break;
         case ('bishop'):
-            showBishop(x/50, y/50);
+            showBishop(x/50, y/50, color);
             break;
         case ('queen'):
-            showRook(x/50, y/50);
-            showBishop(x/50, y/50);
+            showRook(x/50, y/50, color);
+            showBishop(x/50, y/50, color);
             break;
-        
+        case ('king'):
+            showKing(x/50, y/50, color);
     }
 }
 
@@ -126,7 +137,7 @@ function showPawn(x, y, up)
                     g.removeChild(shownLocations.shift());
                 }
                 board[up ? y/50 - 2 : y/50 + 2][x/50] = board[y/50][x/50];
-                board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
+                // board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
                 board[y/50][x/50] = null;
             });
             g.appendChild(moveLocation2);
@@ -158,7 +169,7 @@ function showPawn(x, y, up)
             board[up ? y/50 - 2 : y/50 + 2][x/50 - 1] = null;
             board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
-            document.getElementById('materialcounter').textContent  = 'Material: ' + ++material;
+            // document.getElementById('materialcounter').textContent  = 'Material: ' + ++material;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -183,7 +194,7 @@ function showPawn(x, y, up)
             board[up ? y/50 - 2 : y/50 + 2][x/50 - 1] = null;
             board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
-            document.getElementById('materialcounter').textContent  = 'Material: ' + ++material;
+        //     document.getElementById('materialcounter').textContent  = 'Material: ' + ++material;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -402,20 +413,52 @@ function showKnight(x, y, color)
     }
 }
 
-function showRook(x, y)
+function showRook(x, y, color)
 {
-    for (let i = x + 1; i < 7; i++)
+    for (let i = x + 1; i < 8; i++)
     {
         if (board[y][i] !== null)
         {
+            if (getColor(board[y][i]) !== color)
+            {
+                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation.setAttribute('cx', i * 50 + 25);
+                moveLocation.setAttribute('cy', y * 50 + 25);
+                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    g.removeChild(board[y][i]);
+                    board[y][i] = board[y][x];
+                    board[y][x] = null;
+                });
+                g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
+            }
             break;
         }
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', i * 50 + 25);
-        moveLocation.setAttribute('cy', 25 + y * 50);
+        moveLocation.setAttribute('cy', y * 50 + 25);
         moveLocation.setAttribute('r', 10);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y][i] = board[y][x];
+            board[y][x] = null;
+        });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
     }
@@ -423,29 +466,93 @@ function showRook(x, y)
     {
         if (board[y][i] !== null)
         {
+            if (getColor(board[y][i]) !== color)
+            {
+                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation.setAttribute('cx', i * 50 + 25);
+                moveLocation.setAttribute('cy', y * 50 + 25);
+                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    g.removeChild(board[y][i]);
+                    board[y][i] = board[y][x];
+                    board[y][x] = null;
+                });
+                g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
+            }
             break;
         }
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', i * 50 + 25);
-        moveLocation.setAttribute('cy', 25 + y * 50);
+        moveLocation.setAttribute('cy', y * 50 + 25);
         moveLocation.setAttribute('r', 10);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y][i] = board[y][x];
+            board[y][x] = null;
+        });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
     }
-    for (let i = y + 1; i < 7; i++)
+    for (let i = y + 1; i < 8; i++)
     {
         if (board[i][x] !== null)
         {
+            if (getColor(board[i][x]) !== color)
+            {
+                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation.setAttribute('cx', x * 50 + 25);
+                moveLocation.setAttribute('cy', i * 50 + 25);
+                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    g.removeChild(board[i][x]);
+                    board[i][x] = board[y][x];
+                    board[y][x] = null;
+                });
+                g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
+            }
             break;
         }
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x * 50 + 25);
-        moveLocation.setAttribute('cy', 25 + i * 50);
+        moveLocation.setAttribute('cy', i * 50 + 25);
         moveLocation.setAttribute('r', 10);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[i][x] = board[y][x];
+            board[y][x] = null;
+        });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
     }
@@ -453,22 +560,645 @@ function showRook(x, y)
     {
         if (board[i][x] !== null)
         {
+            if (getColor(board[i][x]) !== color)
+            {
+                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation.setAttribute('cx', x * 50 + 25);
+                moveLocation.setAttribute('cy', i * 50 + 25);
+                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    g.removeChild(board[i][x]);
+                    board[i][x] = board[y][x];
+                    board[y][x] = null;
+                });
+                g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
+            }
             break;
         }
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x * 50 + 25);
-        moveLocation.setAttribute('cy', 25 + i * 50);
+        moveLocation.setAttribute('cy', i * 50 + 25);
         moveLocation.setAttribute('r', 10);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[i][x] = board[y][x];
+            board[y][x] = null;
+        });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
     }
 }
 
-function showBishop(x, y)
+function showBishop(x, y, color)
 {
+    for (let i = 1; y + i < 8 && x + i < 8; i++)
+    {
+        if (board[y + i][x + i] !== null)
+        {
+            if (getColor(board[y + i][x + i]) !== color)
+            {
+                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation.setAttribute('cx', (x + i) * 50 + 25);
+                moveLocation.setAttribute('cy', (y + i) * 50 + 25);
+                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    g.removeChild(board[y + i][x + i]);
+                    board[y + i][x + i] = board[y][x];
+                    board[y][x] = null;
+                });
+                g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
+            }
+            break;
+        }
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x + i) * 50 + 25);
+        moveLocation.setAttribute('cy', (y + i) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y][i] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    for (let i = 1; y - i >= 0 && x - i >= 0; i++)
+    {
+        if (board[y - i][x - i] !== null)
+        {
+            if (getColor(board[y - i][x - i]) !== color)
+            {
+                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation.setAttribute('cx', (x - i) * 50 + 25);
+                moveLocation.setAttribute('cy', (y - i) * 50 + 25);
+                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    g.removeChild(board[y - i][x - i]);
+                    board[y - i][x - i] = board[y][x];
+                    board[y][x] = null;
+                });
+                g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
+            }
+            break;
+        }
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x - i) * 50 + 25);
+        moveLocation.setAttribute('cy', (y - i) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y - i][x - i] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    for (let i = 1; y + i < 8 && x - i >= 0; i++)
+    {
+        if (board[y + i][x - i] !== null)
+        {
+            if (getColor(board[y + i][x - i]) !== color)
+            {
+                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation.setAttribute('cx', (x - i) * 50 + 25);
+                moveLocation.setAttribute('cy', (y + i) * 50 + 25);
+                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    g.removeChild(board[y + i][x - i]);
+                    board[y + i][x - i] = board[y][x];
+                    board[y][x] = null;
+                });
+                g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
+            }
+            break;
+        }
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x - i) * 50 + 25);
+        moveLocation.setAttribute('cy', (y + i) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y + i][x - i] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    for (let i = 1; y - i >= 0 && x + i < 8; i++)
+    {
+        if (board[y - i][x + i] !== null)
+        {
+            if (getColor(board[y - i][x + i]) !== color)
+            {
+                let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation.setAttribute('cx', (x + i) * 50 + 25);
+                moveLocation.setAttribute('cy', (y - i) * 50 + 25);
+                moveLocation.setAttribute('r', 10);
+                moveLocation.setAttribute('class', 'moveLocation');
+                moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    g.removeChild(board[y - i][x + i]);
+                    board[y - i][x + i] = board[y][x];
+                    board[y][x] = null;
+                });
+                g.appendChild(moveLocation);
+                shownLocations.push(moveLocation);
+            }
+            break;
+        }
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x + i) * 50 + 25);
+        moveLocation.setAttribute('cy', (y - i) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y - i][x + i] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+}
 
+function showKing(x, y, color)
+{
+    if (y + 1 < 8 && x + 1 < 8 && board[y + 1][x + 1] !== null && getColor(board[y + 1][x + 1]) !== color)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
+        moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y + 1][x + 1]);
+            board[y + 1][x + 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    else if (y + 1 < 8 && x + 1 < 8 && board[y + 1][x + 1] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
+        moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y + 1][x + 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (y - 1 >= 0 && x - 1 >= 0 && board[y - 1][x - 1] !== null && getColor(board[y - 1][x - 1]) !== color)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
+        moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y - 1][x - 1]);
+            board[y - 1][x - 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    else if (y - 1 >= 0 && x - 1 >= 0 && board[y - 1][x - 1] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
+        moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y - 1][x - 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (y - 1 >= 0 && x + 1 < 8 && board[y - 1][x + 1] !== null && getColor(board[y - 1][x + 1]) !== color)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
+        moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y - 1][x + 1]);
+            board[y - 1][x + 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    else if (y - 1 >= 0 && x + 1 < 8 && board[y - 1][x + 1] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
+        moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y - 1][x + 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (y + 1 < 8 && x - 1 >= 0 && board[y + 1][x - 1] !== null && getColor(board[y + 1][x - 1]) !== color)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
+        moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y + 1][x - 1]);
+            board[y + 1][x - 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    else if (y + 1 < 8 && x - 1 >= 0 && board[y + 1][x - 1] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
+        moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y + 1][x - 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (y + 1 < 8 && board[y + 1][x] !== null && getColor(board[y + 1][x]) !== color)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x * 50 + 25);
+        moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y + 1][x]);
+            board[y + 1][x] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    else if (y + 1 < 8 && board[y + 1][x] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x * 50 + 25);
+        moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y + 1][x] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (y - 1 >= 0 && board[y - 1][x] !== null && getColor(board[y - 1][x]) !== color)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x * 50 + 25);
+        moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y - 1][x]);
+            board[y - 1][x] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    else if (y - 1 >= 0 && board[y - 1][x] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', x * 50 + 25);
+        moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y - 1][x] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (x + 1 < 8 && board[y][x + 1] !== null && getColor(board[y][x + 1]) !== color)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
+        moveLocation.setAttribute('cy', y * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y][x + 1]);
+            board[y][x + 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    else if (x + 1 < 8 && board[y][x + 1] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
+        moveLocation.setAttribute('cy', y * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y][x + 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    if (x - 1 >= 0 && board[y][x - 1] !== null && getColor(board[y][x - 1]) !== color)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
+        moveLocation.setAttribute('cy', y * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            g.removeChild(board[y][x - 1]);
+            board[y][x - 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    else if (x - 1 >= 0 && board[y][x - 1] === null)
+    {
+        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
+        moveLocation.setAttribute('cy', y * 50 + 25);
+        moveLocation.setAttribute('r', 10);
+        moveLocation.setAttribute('class', 'moveLocation');
+        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+        moveLocation.addEventListener('click', (e) => {
+            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+            for (let i = 0; i < shownLocations.length;)
+            {
+                g.removeChild(shownLocations.shift());
+            }
+            board[y][x - 1] = board[y][x];
+            board[y][x] = null;
+        });
+        g.appendChild(moveLocation);
+        shownLocations.push(moveLocation);
+    }
+    let moved = color === 'white' ? kingMoved.white : kingMoved.black;
+    if (!moved)
+    {
+        moved = color === 'white' ? rookMoved.wLeft : rookMoved.bLeft;
+        if (!moved && board[color === 'white' ? 7 : 0][1] === null && board[color === 'white' ? 7 : 0][2] === null && board[color === 'white' ? 7 : 0][3] === null)
+        {
+            let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            moveLocation.setAttribute('cx', (x - 2) * 50 + 25);
+            moveLocation.setAttribute('cy', y * 50 + 25);
+            moveLocation.setAttribute('r', 10);
+            moveLocation.setAttribute('class', 'moveLocation');
+            moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+            moveLocation.addEventListener('click', (e) => {
+                shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                let rook = board[color === 'white' ? 7 : 0][0];
+                rook.setAttribute('x', (x - 1) * 50);
+                board[y][x - 2] = board[y][x];
+                board[y][x - 1] = rook;
+                board[y][x] = null;
+                board[color === 'white' ? 7 : 0][0] = null;
+            });
+            g.appendChild(moveLocation);
+            shownLocations.push(moveLocation);
+        }
+        moved = color === 'white' ? rookMoved.wRight : rookMoved.bRight;
+        if (!moved && board[color === 'white' ? 7 : 0][5] === null && board[color === 'white' ? 7 : 0][6] === null)
+        {
+            let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            moveLocation.setAttribute('cx', (x + 2) * 50 + 25);
+            moveLocation.setAttribute('cy', y * 50 + 25);
+            moveLocation.setAttribute('r', 10);
+            moveLocation.setAttribute('class', 'moveLocation');
+            moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+            moveLocation.addEventListener('click', (e) => {
+                shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                let rook = board[color === 'white' ? 7 : 0][0];
+                rook.setAttribute('x', (x + 1) * 50);
+                board[y][x + 2] = board[y][x];
+                board[y][x + 1] = rook;
+                board[y][x = null];
+                board[color === 'white' ? 7 : 0][0] = null;
+            });
+            g.appendChild(moveLocation);
+            shownLocations.push(moveLocation);
+        }
+    }
 }
 
 function getColor(piece)
