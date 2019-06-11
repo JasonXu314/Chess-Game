@@ -1,4 +1,6 @@
 const board = [[], [], [], [], [], [], [], []];
+var whiteControl = [[], [], [], [], [], [], [], []];
+var blackControl = [[], [], [], [], [], [], [], []];
 var boardElement;
 var g;
 var shownPiece = null;
@@ -30,6 +32,7 @@ window.addEventListener('load', (e) => {
         tile.setAttribute('y', (i % 8) * 50);
         tile.setAttribute('width', '50');
         tile.setAttribute('height', '50');
+        tile.setAttribute('class', 'tile');
         tile.setAttribute('fill', (Math.floor(i/8) + i % 8) % 2 == 0 ? 'white' : 'black');
         g.appendChild(tile);
     }
@@ -55,10 +58,11 @@ window.addEventListener('load', (e) => {
             }
         });
     });
+    updateControls();
 });
 
 document.addEventListener('click', (e) => {
-    if (e.target === document.body || e.target === boardElement)
+    if (e.target === document.body || e.target === boardElement || e.target.getAttribute('class') === 'tile')
     {
         shownPiece = null;
         for (let i = 0; i < shownLocations.length;)
@@ -70,6 +74,7 @@ document.addEventListener('click', (e) => {
 
 function showPlaces(x, y, piece, color)
 {
+    console.log(epMove);
     if (color !== moveColor)
     {
         return;
@@ -108,20 +113,62 @@ function showPawn(x, y, color)
         moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
-        moveLocation.addEventListener('click', (e) => {
-            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
-            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
-            for (let i = 0; i < shownLocations.length;)
-            {
-                g.removeChild(shownLocations.shift());
-            }
-            board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
-            board[y/50][x/50] = null;
-            moveColor = moveColor === 'white' ? 'black' : 'white';
-        });
+        if (y/50 === (up ? 1 : 6))
+        {
+            moveLocation.addEventListener('click', (e) => {
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                g.removeChild(board[y/50][x/50]);
+                board[y/50][x/50] = null;
+                let newPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                newPiece.setAttribute('href', up ? 'Queen_White.png' : 'Queen_Black.png');
+                newPiece.setAttribute('x', x);
+                newPiece.setAttribute('y', y + (up ? -50 : 50));
+                newPiece.setAttribute('width', 50);
+                newPiece.setAttribute('height', 50);
+                newPiece.setAttribute('onclick', '"event.stopPropogation()"');
+                newPiece.addEventListener('click', (e) => {
+                    let x = Number(e.toElement.getAttribute('x'));
+                    let y = Number(e.toElement.getAttribute('y'));
+                    let elementName = e.toElement.getAttribute('href');
+                    let name = elementName.slice(0, elementName.length - 4).toLowerCase();
+                    let piece = name.split('_')[0];
+                    let color = name.split('_')[1];
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    shownPiece = e.toElement;
+                    showPlaces(x, y, piece, color);
+                });
+                g.appendChild(newPiece);
+                board[up? y/50 - 1 : y/50 + 1][x/50] = newPiece;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
+                epMove.x = -1;
+                epMove.y = -1;
+            });
+        }
+        else
+        {
+            moveLocation.addEventListener('click', (e) => {
+                shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
+                board[y/50][x/50] = null;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
+                epMove.x = -1;
+                epMove.y = -1;
+            });
+        }
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
-        if (board[up ? y/50 - 2 : y/50 + 2][x/50] === null && y/50 === (up ? 6 : 1))
+        if (y/50 === (up ? 6 : 1) && board[up ? y/50 - 2 : y/50 + 2][x/50] === null)
         {
             let moveLocation2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation2.setAttribute('cx', x + 25);
@@ -138,15 +185,15 @@ function showPawn(x, y, color)
                 }
                 board[up ? y/50 - 2 : y/50 + 2][x/50] = board[y/50][x/50];
                 board[y/50][x/50] = null;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
                 epMove.x = x/50;
                 epMove.y = up ? y/50 - 2 : y/50 + 2;
-                moveColor = moveColor === 'white' ? 'black' : 'white';
             });
             g.appendChild(moveLocation2);
             shownLocations.push(moveLocation2);
         }
     }
-    if (board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 + 1]) !== color)
+    if (x/50 + 1 < 8 && board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 + 1]) !== color)
     {
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x + 75);
@@ -154,24 +201,67 @@ function showPawn(x, y, color)
         moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
-        moveLocation.addEventListener('click', (e) => {
-            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
-            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
-            for (let i = 0; i < shownLocations.length;)
-            {
-                g.removeChild(shownLocations.shift());
-            }
-            removeLocation = board[up ? y/50 - 1 : y/50 + 1][x/50 + 1];
-            g.removeChild(removeLocation);
-            board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = null;
-            board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = board[y/50][x/50];
-            board[y/50][x/50] = null;
-            moveColor = moveColor === 'white' ? 'black' : 'white';
-        });
+        if (y/50 === (up ? 1 : 6))
+        {
+            moveLocation.addEventListener('click', (e) => {
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                g.removeChild(board[y/50][x/50]);
+                board[y/50][x/50] = null;
+                let newPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                newPiece.setAttribute('href', up ? 'Queen_White.png' : 'Queen_Black.png');
+                newPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                newPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                newPiece.setAttribute('width', 50);
+                newPiece.setAttribute('height', 50);
+                newPiece.setAttribute('onclick', '"event.stopPropogation()"');
+                newPiece.addEventListener('click', (e) => {
+                    let x = Number(e.toElement.getAttribute('x'));
+                    let y = Number(e.toElement.getAttribute('y'));
+                    let elementName = e.toElement.getAttribute('href');
+                    let name = elementName.slice(0, elementName.length - 4).toLowerCase();
+                    let piece = name.split('_')[0];
+                    let color = name.split('_')[1];
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    shownPiece = e.toElement;
+                    showPlaces(x, y, piece, color);
+                });
+                g.appendChild(newPiece);
+                g.removeChild(board[up? y/50 - 1 : y/50 + 1][x/50 + 1]);
+                board[up? y/50 - 1 : y/50 + 1][x/50 + 1] = newPiece;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
+                epMove.x = -1;
+                epMove.y = -1;
+            });
+        }
+        else
+        {
+            moveLocation.addEventListener('click', (e) => {
+                shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                removeLocation = board[up ? y/50 - 1 : y/50 + 1][x/50 + 1];
+                g.removeChild(removeLocation);
+                board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = null;
+                board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = board[y/50][x/50];
+                board[y/50][x/50] = null;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
+                epMove.x = -1;
+                epMove.y = -1;
+            });
+        }
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
     }
-    if (board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 - 1]) !== color)
+    if (x/50 - 1 >= 0 && board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 - 1]) !== color)
     {
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x - 25);
@@ -179,23 +269,66 @@ function showPawn(x, y, color)
         moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
         moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
-        moveLocation.addEventListener('click', (e) => {
-            shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
-            shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
-            for (let i = 0; i < shownLocations.length;)
-            {
-                g.removeChild(shownLocations.shift());
-            }
-            g.removeChild(board[up ? y/50 - 1 : y/50 + 1][x/50 - 1]);
-            board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = null;
-            board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = board[y/50][x/50];
-            board[y/50][x/50] = null;
-            moveColor = moveColor === 'white' ? 'black' : 'white';
-        });
+        if (y/50 === (up ? 1 : 6))
+        {
+            moveLocation.addEventListener('click', (e) => {
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                g.removeChild(board[y/50][x/50]);
+                board[y/50][x/50] = null;
+                let newPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                newPiece.setAttribute('href', up ? 'Queen_White.png' : 'Queen_Black.png');
+                newPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                newPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                newPiece.setAttribute('width', 50);
+                newPiece.setAttribute('height', 50);
+                newPiece.setAttribute('onclick', '"event.stopPropogation()"');
+                newPiece.addEventListener('click', (e) => {
+                    let x = Number(e.toElement.getAttribute('x'));
+                    let y = Number(e.toElement.getAttribute('y'));
+                    let elementName = e.toElement.getAttribute('href');
+                    let name = elementName.slice(0, elementName.length - 4).toLowerCase();
+                    let piece = name.split('_')[0];
+                    let color = name.split('_')[1];
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    shownPiece = e.toElement;
+                    showPlaces(x, y, piece, color);
+                });
+                g.appendChild(newPiece);
+                g.removeChild(board[up? y/50 - 1 : y/50 + 1][x/50 - 1]);
+                board[up? y/50 - 1 : y/50 + 1][x/50 - 1] = newPiece;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
+                epMove.x = -1;
+                epMove.y = -1;
+            });
+        }
+        else
+        {
+            moveLocation.addEventListener('click', (e) => {
+                shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                for (let i = 0; i < shownLocations.length;)
+                {
+                    g.removeChild(shownLocations.shift());
+                }
+                g.removeChild(board[up ? y/50 - 1 : y/50 + 1][x/50 - 1]);
+                board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = null;
+                board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = board[y/50][x/50];
+                board[y/50][x/50] = null;
+                moveColor = moveColor === 'white' ? 'black' : 'white';
+                epMove.x = -1;
+                epMove.y = -1;
+            });
+        }
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
     }
-    if (board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] == null && epMove.x === x/50 - 1 && epMove.y === y/50)
+    if (epMove.x === x/50 - 1 && epMove.y === y/50 && board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] == null)
     {
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         moveLocation.setAttribute('cx', x - 25);
@@ -211,19 +344,19 @@ function showPawn(x, y, color)
                 g.removeChild(shownLocations.shift());
             }
             g.removeChild(board[y/50][x/50 - 1]);
-            board[y/50][x/50 - 1] = board[y/50][x/50];
+            board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
             epMove.x = -1;
             epMove.y = -1;
-            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
     }
-    if (board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] == null && epMove.x === x/50 + 1 && epMove.y === y/50)
+    if (epMove.x === x/50 + 1 && epMove.y === y/50 && board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] == null)
     {
         let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        moveLocation.setAttribute('cx', x - 25);
+        moveLocation.setAttribute('cx', x + 75);
         moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
         moveLocation.setAttribute('r', 12);
         moveLocation.setAttribute('class', 'moveLocation');
@@ -236,11 +369,11 @@ function showPawn(x, y, color)
                 g.removeChild(shownLocations.shift());
             }
             g.removeChild(board[y/50][x/50 + 1]);
-            board[y/50][x/50 + 1] = board[y/50][x/50];
+            board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
+            moveColor = moveColor === 'white' ? 'black' : 'white';
             epMove.x = -1;
             epMove.y = -1;
-            moveColor = moveColor === 'white' ? 'black' : 'white';
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -272,6 +405,8 @@ function showKnight(x, y, color)
             board[y/50 + 2][x/50 + 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -299,6 +434,8 @@ function showKnight(x, y, color)
             board[y/50 - 2][x/50 - 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -326,6 +463,8 @@ function showKnight(x, y, color)
             board[y/50 + 2][x/50 - 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -353,6 +492,8 @@ function showKnight(x, y, color)
             board[y/50 - 2][x/50 + 1] = board[y/50][x/50];
             board[y/50][x/50] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -380,6 +521,8 @@ function showKnight(x, y, color)
             board[y/50 + 1][x/50 + 2] = board[y/50][x/50];
             board[y/50][x/50] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -407,6 +550,8 @@ function showKnight(x, y, color)
             board[y/50 - 1][x/50 - 2] = board[y/50][x/50];
             board[y/50][x/50] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -434,6 +579,8 @@ function showKnight(x, y, color)
             board[y/50 - 1][x/50 + 2] = board[y/50][x/50];
             board[y/50][x/50] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -461,6 +608,8 @@ function showKnight(x, y, color)
             board[y/50 + 1][x/50 - 2] = board[y/50][x/50];
             board[y/50][x/50] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -492,6 +641,30 @@ function showRook(x, y, color)
                     board[y][i] = board[y][x];
                     board[y][x] = null;
                     moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
+                    if (color === 'white')
+                    {
+                        if (x === 0)
+                        {
+                            rookMoved.wLeft = true;
+                        }
+                        else
+                        {
+                            rookMoved.wRight = true;
+                        }
+                    }
+                    else
+                    {
+                        if (x === 0)
+                        {
+                            rookMoved.bLeft = true;
+                        }
+                        else
+                        {
+                            rookMoved.bRight = true;
+                        }
+                    }
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -514,6 +687,30 @@ function showRook(x, y, color)
             board[y][i] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
+            if (color === 'white')
+            {
+                if (x === 0)
+                {
+                    rookMoved.wLeft = true;
+                }
+                else
+                {
+                    rookMoved.wRight = true;
+                }
+            }
+            else
+            {
+                if (x === 0)
+                {
+                    rookMoved.bLeft = true;
+                }
+                else
+                {
+                    rookMoved.bRight = true;
+                }
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -541,6 +738,30 @@ function showRook(x, y, color)
                     board[y][i] = board[y][x];
                     board[y][x] = null;
                     moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
+                    if (color === 'white')
+                    {
+                        if (x === 0)
+                        {
+                            rookMoved.wLeft = true;
+                        }
+                        else
+                        {
+                            rookMoved.wRight = true;
+                        }
+                    }
+                    else
+                    {
+                        if (x === 0)
+                        {
+                            rookMoved.bLeft = true;
+                        }
+                        else
+                        {
+                            rookMoved.bRight = true;
+                        }
+                    }
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -563,6 +784,30 @@ function showRook(x, y, color)
             board[y][i] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
+            if (color === 'white')
+            {
+                if (x === 0)
+                {
+                    rookMoved.wLeft = true;
+                }
+                else
+                {
+                    rookMoved.wRight = true;
+                }
+            }
+            else
+            {
+                if (x === 0)
+                {
+                    rookMoved.bLeft = true;
+                }
+                else
+                {
+                    rookMoved.bRight = true;
+                }
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -590,6 +835,30 @@ function showRook(x, y, color)
                     board[i][x] = board[y][x];
                     board[y][x] = null;
                     moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
+                    if (color === 'white')
+                    {
+                        if (x === 0)
+                        {
+                            rookMoved.wLeft = true;
+                        }
+                        else
+                        {
+                            rookMoved.wRight = true;
+                        }
+                    }
+                    else
+                    {
+                        if (x === 0)
+                        {
+                            rookMoved.bLeft = true;
+                        }
+                        else
+                        {
+                            rookMoved.bRight = true;
+                        }
+                    }
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -612,6 +881,30 @@ function showRook(x, y, color)
             board[i][x] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
+            if (color === 'white')
+            {
+                if (x === 0)
+                {
+                    rookMoved.wLeft = true;
+                }
+                else
+                {
+                    rookMoved.wRight = true;
+                }
+            }
+            else
+            {
+                if (x === 0)
+                {
+                    rookMoved.bLeft = true;
+                }
+                else
+                {
+                    rookMoved.bRight = true;
+                }
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -639,6 +932,30 @@ function showRook(x, y, color)
                     board[i][x] = board[y][x];
                     board[y][x] = null;
                     moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
+                    if (color === 'white')
+                    {
+                        if (x === 0)
+                        {
+                            rookMoved.wLeft = true;
+                        }
+                        else
+                        {
+                            rookMoved.wRight = true;
+                        }
+                    }
+                    else
+                    {
+                        if (x === 0)
+                        {
+                            rookMoved.bLeft = true;
+                        }
+                        else
+                        {
+                            rookMoved.bRight = true;
+                        }
+                    }
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -661,6 +978,30 @@ function showRook(x, y, color)
             board[i][x] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
+            if (color === 'white')
+            {
+                if (x === 0)
+                {
+                    rookMoved.wLeft = true;
+                }
+                else
+                {
+                    rookMoved.wRight = true;
+                }
+            }
+            else
+            {
+                if (x === 0)
+                {
+                    rookMoved.bLeft = true;
+                }
+                else
+                {
+                    rookMoved.bRight = true;
+                }
+            }
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -692,6 +1033,8 @@ function showBishop(x, y, color)
                     board[y + i][x + i] = board[y][x];
                     board[y][x] = null;
                     moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -714,6 +1057,8 @@ function showBishop(x, y, color)
             board[y + i][x + i] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -741,6 +1086,8 @@ function showBishop(x, y, color)
                     board[y - i][x - i] = board[y][x];
                     board[y][x] = null;
                     moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -763,6 +1110,8 @@ function showBishop(x, y, color)
             board[y - i][x - i] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -790,6 +1139,8 @@ function showBishop(x, y, color)
                     board[y + i][x - i] = board[y][x];
                     board[y][x] = null;
                     moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -812,6 +1163,8 @@ function showBishop(x, y, color)
             board[y + i][x - i] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -839,6 +1192,8 @@ function showBishop(x, y, color)
                     board[y - i][x + i] = board[y][x];
                     board[y][x] = null;
                     moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
                 });
                 g.appendChild(moveLocation);
                 shownLocations.push(moveLocation);
@@ -861,6 +1216,8 @@ function showBishop(x, y, color)
             board[y - i][x + i] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
         });
         g.appendChild(moveLocation);
         shownLocations.push(moveLocation);
@@ -888,6 +1245,8 @@ function showKing(x, y, color)
             board[y + 1][x + 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -918,6 +1277,8 @@ function showKing(x, y, color)
             board[y + 1][x + 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -949,6 +1310,8 @@ function showKing(x, y, color)
             board[y - 1][x - 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -979,6 +1342,8 @@ function showKing(x, y, color)
             board[y - 1][x - 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1010,6 +1375,8 @@ function showKing(x, y, color)
             board[y - 1][x + 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1040,6 +1407,8 @@ function showKing(x, y, color)
             board[y - 1][x + 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1071,6 +1440,8 @@ function showKing(x, y, color)
             board[y + 1][x - 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1101,6 +1472,8 @@ function showKing(x, y, color)
             board[y + 1][x - 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1132,6 +1505,8 @@ function showKing(x, y, color)
             board[y + 1][x] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1162,6 +1537,8 @@ function showKing(x, y, color)
             board[y + 1][x] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1193,6 +1570,8 @@ function showKing(x, y, color)
             board[y - 1][x] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1223,6 +1602,8 @@ function showKing(x, y, color)
             board[y - 1][x] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1254,6 +1635,8 @@ function showKing(x, y, color)
             board[y][x + 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1284,6 +1667,8 @@ function showKing(x, y, color)
             board[y][x + 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1315,6 +1700,8 @@ function showKing(x, y, color)
             board[y][x - 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1345,6 +1732,8 @@ function showKing(x, y, color)
             board[y][x - 1] = board[y][x];
             board[y][x] = null;
             moveColor = moveColor === 'white' ? 'black' : 'white';
+            epMove.x = -1;
+            epMove.y = -1;
             if (color === 'white')
             {
                 kingMoved.white = true;
@@ -1383,6 +1772,8 @@ function showKing(x, y, color)
                 board[y][x] = null;
                 board[color === 'white' ? 7 : 0][0] = null;
                 moveColor = moveColor === 'white' ? 'black' : 'white';
+                epMove.x = -1;
+                epMove.y = -1;
                 if (color === 'white')
                 {
                     kingMoved.white = true;
@@ -1418,6 +1809,8 @@ function showKing(x, y, color)
                 board[y][x = null];
                 board[color === 'white' ? 7 : 0][7] = null;
                 moveColor = moveColor === 'white' ? 'black' : 'white';
+                epMove.x = -1;
+                epMove.y = -1;
                 if (color === 'white')
                 {
                     kingMoved.white = true;
@@ -1433,9 +1826,33 @@ function showKing(x, y, color)
     }
 }
 
+function updateControls()
+{
+    whiteControl = updateWhite(board);
+    blackControl = updateBlack(board);
+}
+
+function updateWhite(board)
+{
+    for (let x = 0; x < 8; x++)
+    {
+
+    }
+}
+
+function updateBlack(board)
+{
+
+}
+
 function getColor(piece)
 {
     return piece.getAttribute('href').slice(0, piece.getAttribute('href').length - 4).toLowerCase().split('_')[1];
+}
+
+function getPiece(piece)
+{
+    return piece.getAttribute('href').slice(0, piece.getAttribute('href').length - 4).toLowerCase().split('_')[0];
 }
 
 function init()
