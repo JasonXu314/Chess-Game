@@ -137,7 +137,7 @@ window.addEventListener('load', (e) => {
             board[moveColor === 'white' ? whiteKing.y : blackKing.y][moveColor === 'white' ? whiteKing.x : blackKing.x].dispatchEvent(clickEvent);
             clickEvent = null;
         }
-    }, 250);
+    }, 200);
 });
 
 document.addEventListener('click', (e) => {
@@ -186,24 +186,21 @@ function showPawn(x, y, color)
     if (board[up ? y/50 - 1 : y/50 + 1][x/50] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y/50 - 1 : y/50 + 1][x/50] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (up)
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[up ? y/50 - 1 : y/50 + 1][x/50] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (up)
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -273,24 +270,21 @@ function showPawn(x, y, color)
             shownLocations.push(moveLocation);
         }
         skip = false;
-        if (inCheck)
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y/50 - 2 : y/50 + 2][x/50] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (up)
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[up ? y/50 - 2 : y/50 + 2][x/50] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (up)
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -325,24 +319,21 @@ function showPawn(x, y, color)
     if (x/50 + 1 < 8 && board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 + 1]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (up)
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[up ? y/50 - 1 : y/50 + 1][x/50 + 1] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (up)
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -419,24 +410,21 @@ function showPawn(x, y, color)
     if (x/50 - 1 >= 0 && board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 - 1]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (up)
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (up)
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -512,25 +500,22 @@ function showPawn(x, y, color)
     if (epMove.x === x/50 - 1 && epMove.y === y/50 && board[up ? y/50 - 1 : y/50 + 1][x/50 - 1] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        boardCopy[y/50][x/50 - 1] = null;
+        if (up)
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            boardCopy[y/50][x/50 - 1] = null;
-            if (up)
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -564,25 +549,22 @@ function showPawn(x, y, color)
     if (epMove.x === x/50 + 1 && epMove.y === y/50 && board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] == null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        boardCopy[y/50][x/50 + 1] = null;
+        if (up)
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[up ? y/50 - 1 : y/50 + 1][x/50 - 1] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            boardCopy[y/50][x/50 + 1] = null;
-            if (up)
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -620,24 +602,21 @@ function showKnight(x, y, color)
     if ((y <= 250 && x <=300) && (board[y/50 + 2][x/50 + 1] === null || getColor(board[y/50 + 2][x/50 + 1]) !== color))
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y/50 + 2][x/50 + 1] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y/50 + 2][x/50 + 1] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -674,24 +653,21 @@ function showKnight(x, y, color)
     if ((y >= 100 && x >= 50) && (board[y/50 - 2][x/50 - 1] === null || getColor(board[y/50 - 2][x/50 - 1]) !== color))
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y/50 - 2][x/50 - 1] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y/50 - 2][x/50 - 1] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -728,24 +704,21 @@ function showKnight(x, y, color)
     if ((y <= 250 && x >= 50) && (board[y/50 + 2][x/50 - 1] === null || getColor(board[y/50 + 2][x/50 - 1]) !== color))
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y/50 + 2][x/50 - 1] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y/50 + 2][x/50 - 1] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -782,24 +755,21 @@ function showKnight(x, y, color)
     if ((y >= 100 && x <= 300) && (board[y/50 - 2][x/50 + 1] === null || getColor(board[y/50 - 2][x/50 + 1]) !== color))
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y/50 - 2][x/50 + 1] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y/50 - 2][x/50 + 1] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -836,24 +806,21 @@ function showKnight(x, y, color)
     if ((y <= 300 && x <=250) && (board[y/50 + 1][x/50 + 2] === null || getColor(board[y/50 + 1][x/50 + 2]) !== color))
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y/50 + 1][x/50 + 2] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y/50 + 1][x/50 + 2] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -890,24 +857,21 @@ function showKnight(x, y, color)
     if ((y >= 50 && x >= 100) && (board[y/50 - 1][x/50 - 2] === null || getColor(board[y/50 - 1][x/50 - 2]) !== color))
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y/50 - 1][x/50 - 2] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y/50 - 1][x/50 - 2] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -944,24 +908,21 @@ function showKnight(x, y, color)
     if ((y >= 50 && x <= 250) && (board[y/50 - 1][x/50 + 2] === null || getColor(board[y/50 - 1][x/50 + 2]) !== color))
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y/50 - 1][x/50 + 2] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y/50 - 1][x/50 + 2] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -998,24 +959,21 @@ function showKnight(x, y, color)
     if ((y <= 300 && x >= 100) && (board[y/50 + 1][x/50 - 2] === null || getColor(board[y/50 + 1][x/50 - 2]) !== color))
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y/50 + 1][x/50 - 2] = boardCopy[y/50][x/50];
+        boardCopy[y/50][x/50] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y/50 + 1][x/50 - 2] = boardCopy[y/50][x/50];
-            boardCopy[y/50][x/50] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -1060,24 +1018,21 @@ function showRook(x, y, color)
             if (getColor(board[y][i]) !== color)
             {
                 let skip = false;
-                if (inCheck)
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[y][i] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
                 {
-                    let boardCopy = Array.from(board, (element) => Array.from(element));
-                    boardCopy[y][i] = boardCopy[y][x];
-                    boardCopy[y][x] = null;
-                    if (color === 'white')
+                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                     {
-                        if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
-                    else
+                }
+                else
+                {
+                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
                     {
-                        if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
                 }
                 if (!skip)
@@ -1132,24 +1087,21 @@ function showRook(x, y, color)
             break;
         }
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y][i] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -1207,24 +1159,21 @@ function showRook(x, y, color)
             if (getColor(board[y][i]) !== color)
             {
                 let skip = false;
-                if (inCheck)
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[y][i] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
                 {
-                    let boardCopy = Array.from(board, (element) => Array.from(element));
-                    boardCopy[y][i] = boardCopy[y][x];
-                    boardCopy[y][x] = null;
-                    if (color === 'white')
+                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                     {
-                        if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
-                    else
+                }
+                else
+                {
+                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
                     {
-                        if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
                 }
                 if (!skip)
@@ -1279,24 +1228,21 @@ function showRook(x, y, color)
             break;
         }
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y][i] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -1354,24 +1300,21 @@ function showRook(x, y, color)
             if (getColor(board[i][x]) !== color)
             {
                 let skip = false;
-                if (inCheck)
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[i][x] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
                 {
-                    let boardCopy = Array.from(board, (element) => Array.from(element));
-                    boardCopy[i][x] = boardCopy[y][x];
-                    boardCopy[y][x] = null;
-                    if (color === 'white')
+                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                     {
-                        if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
-                    else
+                }
+                else
+                {
+                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
                     {
-                        if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
                 }
                 if (!skip)
@@ -1426,24 +1369,21 @@ function showRook(x, y, color)
             break;
         }
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[i][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[i][x] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -1501,24 +1441,21 @@ function showRook(x, y, color)
             if (getColor(board[i][x]) !== color)
             {
                 let skip = false;
-                if (inCheck)
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[i][x] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
                 {
-                    let boardCopy = Array.from(board, (element) => Array.from(element));
-                    boardCopy[i][x] = boardCopy[y][x];
-                    boardCopy[y][x] = null;
-                    if (color === 'white')
+                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                     {
-                        if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
-                    else
+                }
+                else
+                {
+                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
                     {
-                        if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
                 }
                 if (!skip)
@@ -1573,24 +1510,21 @@ function showRook(x, y, color)
             break;
         }
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[i][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[i][x] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -1652,24 +1586,21 @@ function showBishop(x, y, color)
             if (getColor(board[y + i][x + i]) !== color)
             {
                 let skip = false;
-                if (inCheck)
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[y + i][x + i] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
                 {
-                    let boardCopy = Array.from(board, (element) => Array.from(element));
-                    boardCopy[y + i][x + i] = boardCopy[y][x];
-                    boardCopy[y][x] = null;
-                    if (color === 'white')
+                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                     {
-                        if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
-                    else
+                }
+                else
+                {
+                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
                     {
-                        if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
                 }
                 if (!skip)
@@ -1702,24 +1633,21 @@ function showBishop(x, y, color)
             break;
         }
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + i][x + i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y + i][x + i] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -1755,24 +1683,21 @@ function showBishop(x, y, color)
             if (getColor(board[y - i][x - i]) !== color)
             {
                 let skip = false;
-                if (inCheck)
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[y - i][x - i] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
                 {
-                    let boardCopy = Array.from(board, (element) => Array.from(element));
-                    boardCopy[y - i][x - i] = boardCopy[y][x];
-                    boardCopy[y][x] = null;
-                    if (color === 'white')
+                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                     {
-                        if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
-                    else
+                }
+                else
+                {
+                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
                     {
-                        if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
                 }
                 if (!skip)
@@ -1805,24 +1730,21 @@ function showBishop(x, y, color)
             break;
         }
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - i][x - i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y - i][x - i] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -1858,24 +1780,21 @@ function showBishop(x, y, color)
             if (getColor(board[y + i][x - i]) !== color)
             {
                 let skip = false;
-                if (inCheck)
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[y + i][x - i] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
                 {
-                    let boardCopy = Array.from(board, (element) => Array.from(element));
-                    boardCopy[y + i][x - i] = boardCopy[y][x];
-                    boardCopy[y][x] = null;
-                    if (color === 'white')
+                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                     {
-                        if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
-                    else
+                }
+                else
+                {
+                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
                     {
-                        if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
                 }
                 if (!skip)
@@ -1908,24 +1827,21 @@ function showBishop(x, y, color)
             break;
         }
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + i][x - i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y + i][x - i] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -1961,24 +1877,21 @@ function showBishop(x, y, color)
             if (getColor(board[y - i][x + i]) !== color)
             {
                 let skip = false;
-                if (inCheck)
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[y - i][x + i] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
                 {
-                    let boardCopy = Array.from(board, (element) => Array.from(element));
-                    boardCopy[y - i][x + i] = boardCopy[y][x];
-                    boardCopy[y][x] = null;
-                    if (color === 'white')
+                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                     {
-                        if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
-                    else
+                }
+                else
+                {
+                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
                     {
-                        if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                        {
-                            skip = true;
-                        }
+                        skip = true;
                     }
                 }
                 if (!skip)
@@ -2011,24 +1924,21 @@ function showBishop(x, y, color)
             break;
         }
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - i][x + i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y - i][x + i] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2064,24 +1974,21 @@ function showKing(x, y, color)
     if (y + 1 < 8 && x + 1 < 8 && board[y + 1][x + 1] !== null && getColor(board[y + 1][x + 1]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y + 1][x + 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x + 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x + 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2126,24 +2033,21 @@ function showKing(x, y, color)
     else if (y + 1 < 8 && x + 1 < 8 && board[y + 1][x + 1] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y + 1][x + 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x + 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x + 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2187,24 +2091,21 @@ function showKing(x, y, color)
     if (y - 1 >= 0 && x - 1 >= 0 && board[y - 1][x - 1] !== null && getColor(board[y - 1][x - 1]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y - 1][x - 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2249,24 +2150,21 @@ function showKing(x, y, color)
     else if (y - 1 >= 0 && x - 1 >= 0 && board[y - 1][x - 1] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y - 1][x - 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2310,24 +2208,21 @@ function showKing(x, y, color)
     if (y - 1 >= 0 && x + 1 < 8 && board[y - 1][x + 1] !== null && getColor(board[y - 1][x + 1]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y - 1][x - 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2372,24 +2267,21 @@ function showKing(x, y, color)
     else if (y - 1 >= 0 && x + 1 < 8 && board[y - 1][x + 1] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y - 1][x + 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x + 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x + 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2433,24 +2325,21 @@ function showKing(x, y, color)
     if (y + 1 < 8 && x - 1 >= 0 && board[y + 1][x - 1] !== null && getColor(board[y + 1][x - 1]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y + 1][x - 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x - 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x - 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2495,24 +2384,21 @@ function showKing(x, y, color)
     else if (y + 1 < 8 && x - 1 >= 0 && board[y + 1][x - 1] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y + 1][x - 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x - 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x - 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2556,24 +2442,21 @@ function showKing(x, y, color)
     if (y + 1 < 8 && board[y + 1][x] !== null && getColor(board[y + 1][x]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y + 1][x] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2618,24 +2501,21 @@ function showKing(x, y, color)
     else if (y + 1 < 8 && board[y + 1][x] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y + 1][x] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y + 1][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2679,24 +2559,21 @@ function showKing(x, y, color)
     if (y - 1 >= 0 && board[y - 1][x] !== null && getColor(board[y - 1][x]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y - 1][x] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2741,24 +2618,21 @@ function showKing(x, y, color)
     else if (y - 1 >= 0 && board[y - 1][x] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y - 1][x] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x])
             {
-                if (updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x])
             {
-                if (updateWhite(boardCopy)[blackKing.y - 1][blackKing.x])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2802,24 +2676,21 @@ function showKing(x, y, color)
     if (x + 1 < 8 && board[y][x + 1] !== null && getColor(board[y][x + 1]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y][x + 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x + 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x + 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2864,24 +2735,21 @@ function showKing(x, y, color)
     else if (x + 1 < 8 && board[y][x + 1] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y][x + 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x + 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x + 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x + 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2925,24 +2793,21 @@ function showKing(x, y, color)
     if (x - 1 >= 0 && board[y][x - 1] !== null && getColor(board[y][x - 1]) !== color)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y][x - 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x - 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x - 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
@@ -2987,24 +2852,21 @@ function showKing(x, y, color)
     else if (x - 1 >= 0 && board[y][x - 1] === null)
     {
         let skip = false;
-        if (inCheck)
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
         {
-            let boardCopy = Array.from(board, (element) => Array.from(element));
-            boardCopy[y][x - 1] = boardCopy[y][x];
-            boardCopy[y][x] = null;
-            if (color === 'white')
+            if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x - 1])
             {
-                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
-            else
+        }
+        else
+        {
+            if (updateWhite(boardCopy)[blackKing.y][blackKing.x - 1])
             {
-                if (updateWhite(boardCopy)[blackKing.y][blackKing.x - 1])
-                {
-                    skip = true;
-                }
+                skip = true;
             }
         }
         if (!skip)
