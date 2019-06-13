@@ -21,6 +21,17 @@ const epMove = {
     x: -1,
     y: -1
 }
+const blackKing = {
+    x: 4,
+    y: 0
+}
+const whiteKing = {
+    x: 4,
+    y: 7
+}
+var check = null;
+var inCheck = false;
+let clickEvent = null;
 
 window.addEventListener('load', (e) => {
     boardElement = document.getElementById('board');
@@ -59,6 +70,74 @@ window.addEventListener('load', (e) => {
         });
     });
     updateControls();
+    setInterval(() => {
+        if (check !== null)
+        {
+            g.removeChild(check);
+            check = null;
+        }
+        if (moveColor === 'white')
+        {
+            if (blackControl[whiteKing.y][whiteKing.x])
+            {
+                let checkCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                checkCircle.setAttribute('cx', whiteKing.x * 50 + 25);
+                checkCircle.setAttribute('cy', whiteKing.y * 50 + 25);
+                checkCircle.setAttribute('r', 25);
+                checkCircle.setAttribute('fill', 'url(#grad1)');
+                checkCircle.setAttribute('id', 'checkCircle');
+                checkCircle.addEventListener('click', (e) => {
+                    clickEvent = e;
+                });
+                g.appendChild(checkCircle);
+                check = checkCircle;
+                inCheck = true;
+            }
+            else if (check !== null)
+            {
+                g.removeChild(check);
+                check = null;
+                inCheck = false;
+            }
+            else
+            {
+                inCheck = false;
+            }
+        }
+        else if (moveColor === 'black')
+        {
+            if (whiteControl[blackKing.y][blackKing.x])
+            {
+                let checkCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                checkCircle.setAttribute('cx', blackKing.x * 50 + 25);
+                checkCircle.setAttribute('cy', blackKing.y * 50 + 25);
+                checkCircle.setAttribute('r', 25);
+                checkCircle.setAttribute('fill', 'url(#grad1)');
+                checkCircle.setAttribute('id', 'checkCircle');
+                checkCircle.addEventListener('click', (e) => {
+                    clickEvent = e;
+                });
+                g.appendChild(checkCircle);
+                check = checkCircle;
+                inCheck = true;
+            }
+            else if (check !== null)
+            {
+                g.removeChild(check);
+                check = null;
+                inCheck = false;
+            }
+            else
+            {
+                inCheck = false;
+            }
+        }
+        if (clickEvent !== null)
+        {
+            board[moveColor === 'white' ? whiteKing.y : blackKing.y][moveColor === 'white' ? whiteKing.x : blackKing.x].dispatchEvent(clickEvent);
+            clickEvent = null;
+        }
+    }, 250);
 });
 
 document.addEventListener('click', (e) => {
@@ -106,93 +185,143 @@ function showPawn(x, y, color)
     let up = color === 'white';
     if (board[up ? y/50 - 1 : y/50 + 1][x/50] === null)
     {
-        let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        moveLocation.setAttribute('cx', x + 25);
-        moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-        moveLocation.setAttribute('r', 12);
-        moveLocation.setAttribute('class', 'moveLocation');
-        moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
-        if (y/50 === (up ? 1 : 6))
+        let skip = false;
+        if (inCheck)
         {
-            moveLocation.addEventListener('click', (e) => {
-                for (let i = 0; i < shownLocations.length;)
+            let boardCopy = Array.from(board, (element) => Array.from(element));
+            boardCopy[up ? y/50 - 1 : y/50 + 1][x/50] = boardCopy[y/50][x/50];
+            boardCopy[y/50][x/50] = null;
+            console.table(boardCopy);
+            console.table(updateBlack(boardCopy));
+            if (up)
+            {
+                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                 {
-                    g.removeChild(shownLocations.shift());
+                    skip = true;
                 }
-                g.removeChild(board[y/50][x/50]);
-                board[y/50][x/50] = null;
-                let newPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-                newPiece.setAttribute('href', up ? 'Queen_White.png' : 'Queen_Black.png');
-                newPiece.setAttribute('x', x);
-                newPiece.setAttribute('y', y + (up ? -50 : 50));
-                newPiece.setAttribute('width', 50);
-                newPiece.setAttribute('height', 50);
-                newPiece.setAttribute('onclick', '"event.stopPropogation()"');
-                newPiece.addEventListener('click', (e) => {
-                    let x = Number(e.toElement.getAttribute('x'));
-                    let y = Number(e.toElement.getAttribute('y'));
-                    let elementName = e.toElement.getAttribute('href');
-                    let name = elementName.slice(0, elementName.length - 4).toLowerCase();
-                    let piece = name.split('_')[0];
-                    let color = name.split('_')[1];
+            }
+            else
+            {
+                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
+                {
+                    skip = true;
+                }
+            }
+        }
+        if (!skip)
+        {
+            let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            moveLocation.setAttribute('cx', x + 25);
+            moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
+            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('class', 'moveLocation');
+            moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+            if (y/50 === (up ? 1 : 6))
+            {
+                moveLocation.addEventListener('click', (e) => {
                     for (let i = 0; i < shownLocations.length;)
                     {
                         g.removeChild(shownLocations.shift());
                     }
-                    shownPiece = e.toElement;
-                    showPlaces(x, y, piece, color);
+                    g.removeChild(board[y/50][x/50]);
+                    board[y/50][x/50] = null;
+                    let newPiece = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                    newPiece.setAttribute('href', up ? 'Queen_White.png' : 'Queen_Black.png');
+                    newPiece.setAttribute('x', x);
+                    newPiece.setAttribute('y', y + (up ? -50 : 50));
+                    newPiece.setAttribute('width', 50);
+                    newPiece.setAttribute('height', 50);
+                    newPiece.setAttribute('onclick', '"event.stopPropogation()"');
+                    newPiece.addEventListener('click', (e) => {
+                        let x = Number(e.toElement.getAttribute('x'));
+                        let y = Number(e.toElement.getAttribute('y'));
+                        let elementName = e.toElement.getAttribute('href');
+                        let name = elementName.slice(0, elementName.length - 4).toLowerCase();
+                        let piece = name.split('_')[0];
+                        let color = name.split('_')[1];
+                        for (let i = 0; i < shownLocations.length;)
+                        {
+                            g.removeChild(shownLocations.shift());
+                        }
+                        shownPiece = e.toElement;
+                        showPlaces(x, y, piece, color);
+                    });
+                    g.appendChild(newPiece);
+                    board[up? y/50 - 1 : y/50 + 1][x/50] = newPiece;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
+                    updateControls();
                 });
-                g.appendChild(newPiece);
-                board[up? y/50 - 1 : y/50 + 1][x/50] = newPiece;
-                moveColor = moveColor === 'white' ? 'black' : 'white';
-                epMove.x = -1;
-                epMove.y = -1;
-                updateControls();
-            });
+            }
+            else
+            {
+                moveLocation.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
+                    board[y/50][x/50] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = -1;
+                    epMove.y = -1;
+                    updateControls();
+                });
+            }
+            g.appendChild(moveLocation);
+            shownLocations.push(moveLocation);
         }
-        else
+        skip = false;
+        if (inCheck)
         {
-            moveLocation.addEventListener('click', (e) => {
-                shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
-                shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
-                for (let i = 0; i < shownLocations.length;)
+            let boardCopy = Array.from(board, (element) => Array.from(element));
+            boardCopy[up ? y/50 - 2 : y/50 + 2][x/50] = boardCopy[y/50][x/50];
+            boardCopy[y/50][x/50] = null;
+            if (up)
+            {
+                if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
                 {
-                    g.removeChild(shownLocations.shift());
+                    skip = true;
                 }
-                board[up ? y/50 - 1 : y/50 + 1][x/50] = board[y/50][x/50];
-                board[y/50][x/50] = null;
-                moveColor = moveColor === 'white' ? 'black' : 'white';
-                epMove.x = -1;
-                epMove.y = -1;
-                updateControls();
-            });
+            }
+            else
+            {
+                if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
+                {
+                    skip = true;
+                }
+            }
         }
-        g.appendChild(moveLocation);
-        shownLocations.push(moveLocation);
-        if (y/50 === (up ? 6 : 1) && board[up ? y/50 - 2 : y/50 + 2][x/50] === null)
+        if (!skip)
         {
-            let moveLocation2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            moveLocation2.setAttribute('cx', x + 25);
-            moveLocation2.setAttribute('cy', 25 + (up ? y - 100 : y + 100));
-            moveLocation2.setAttribute('r', 12);
-            moveLocation2.setAttribute('class', 'moveLocation');
-            moveLocation2.setAttribute('onclick', '"event.stopPropogation()"');
-            moveLocation2.addEventListener('click', (e) => {
-                shownPiece.setAttribute('x', moveLocation2.getAttribute('cx') - 25);
-                shownPiece.setAttribute('y', moveLocation2.getAttribute('cy') - 25);
-                for (let i = 0; i < shownLocations.length;)
-                {
-                    g.removeChild(shownLocations.shift());
-                }
-                board[up ? y/50 - 2 : y/50 + 2][x/50] = board[y/50][x/50];
-                board[y/50][x/50] = null;
-                moveColor = moveColor === 'white' ? 'black' : 'white';
-                epMove.x = x/50;
-                epMove.y = up ? y/50 - 2 : y/50 + 2;
-                updateControls();
-            });
-            g.appendChild(moveLocation2);
-            shownLocations.push(moveLocation2);
+            if (y/50 === (up ? 6 : 1) && board[up ? y/50 - 2 : y/50 + 2][x/50] === null)
+            {
+                let moveLocation2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                moveLocation2.setAttribute('cx', x + 25);
+                moveLocation2.setAttribute('cy', 25 + (up ? y - 100 : y + 100));
+                moveLocation2.setAttribute('r', 12);
+                moveLocation2.setAttribute('class', 'moveLocation');
+                moveLocation2.setAttribute('onclick', '"event.stopPropogation()"');
+                moveLocation2.addEventListener('click', (e) => {
+                    shownPiece.setAttribute('x', moveLocation2.getAttribute('cx') - 25);
+                    shownPiece.setAttribute('y', moveLocation2.getAttribute('cy') - 25);
+                    for (let i = 0; i < shownLocations.length;)
+                    {
+                        g.removeChild(shownLocations.shift());
+                    }
+                    board[up ? y/50 - 2 : y/50 + 2][x/50] = board[y/50][x/50];
+                    board[y/50][x/50] = null;
+                    moveColor = moveColor === 'white' ? 'black' : 'white';
+                    epMove.x = x/50;
+                    epMove.y = up ? y/50 - 2 : y/50 + 2;
+                    updateControls();
+                });
+                g.appendChild(moveLocation2);
+                shownLocations.push(moveLocation2);
+            }
         }
     }
     if (x/50 + 1 < 8 && board[up ? y/50 - 1 : y/50 + 1][x/50 + 1] !== null && getColor(board[up ? y/50 - 1 : y/50 + 1][x/50 + 1]) !== color)
@@ -1285,10 +1414,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x + 1;
+                whiteKing.y = y + 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x + 1;
+                blackKing.y = y + 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1318,10 +1451,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x + 1;
+                whiteKing.y = y + 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x + 1;
+                blackKing.y = y + 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1352,10 +1489,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x - 1;
+                whiteKing.y = y - 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x - 1;
+                blackKing.y = y - 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1385,10 +1526,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x - 1;
+                whiteKing.y = y - 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x - 1;
+                blackKing.y = y - 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1419,10 +1564,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x + 1;
+                whiteKing.y = y - 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x + 1;
+                blackKing.y = y - 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1452,10 +1601,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x + 1;
+                whiteKing.y = y - 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x + 1;
+                blackKing.y = y - 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1486,10 +1639,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x - 1;
+                whiteKing.y = y + 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x - 1;
+                blackKing.y = y + 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1519,10 +1676,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x - 1;
+                whiteKing.y = y + 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x - 1;
+                blackKing.y = y + 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1553,10 +1714,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x;
+                whiteKing.y = y + 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x;
+                blackKing.y = y + 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1586,10 +1751,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x;
+                whiteKing.y = y + 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x;
+                blackKing.y = y + 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1620,10 +1789,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x;
+                whiteKing.y = y - 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x;
+                blackKing.y = y - 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1653,10 +1826,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x;
+                whiteKing.y = y - 1;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x;
+                blackKing.y = y - 1;
             }
         });
         g.appendChild(moveLocation);
@@ -1687,10 +1864,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x + 1;
+                whiteKing.y = y;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x + 1;
+                blackKing.y = y;
             }
         });
         g.appendChild(moveLocation);
@@ -1720,10 +1901,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x + 1;
+                whiteKing.y = y;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x + 1;
+                blackKing.y = y;
             }
         });
         g.appendChild(moveLocation);
@@ -1754,10 +1939,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x - 1;
+                whiteKing.y = y;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x - 1;
+                blackKing.y = y;
             }
         });
         g.appendChild(moveLocation);
@@ -1787,10 +1976,14 @@ function showKing(x, y, color)
             if (color === 'white')
             {
                 kingMoved.white = true;
+                whiteKing.x = x - 1;
+                whiteKing.y = y;
             }
             else
             {
                 kingMoved.black = true;
+                blackKing.x = x - 1;
+                blackKing.y = y;
             }
         });
         g.appendChild(moveLocation);
@@ -1828,10 +2021,14 @@ function showKing(x, y, color)
                 if (color === 'white')
                 {
                     kingMoved.white = true;
+                    whiteKing.x = x - 2;
+                    whiteKing.y = y;
                 }
                 else
                 {
                     kingMoved.black = true;
+                    blackKing.x = x - 2;
+                    blackKing.y = y;
                 }
             });
             g.appendChild(moveLocation);
@@ -1866,10 +2063,14 @@ function showKing(x, y, color)
                 if (color === 'white')
                 {
                     kingMoved.white = true;
+                    whiteKing.x = x + 2;
+                    whiteKing.y = y;
                 }
                 else
                 {
                     kingMoved.black = true;
+                    blackKing.x = x + 2;
+                    blackKing.y = y;
                 }
             });
             g.appendChild(moveLocation);
@@ -1880,8 +2081,6 @@ function showKing(x, y, color)
 
 function updateControls()
 {
-    console.table(whiteControl);
-    console.table(blackControl);
     whiteControl = updateWhite(board);
     blackControl = updateBlack(board);
 }
@@ -1893,7 +2092,18 @@ function updateWhite(board)
     {
         for (let y = 0; y < 8; y++)
         {
+            boolBoard[y][x] = false;
+        }
+    }
+    for (let x = 0; x < 8; x++)
+    {
+        for (let y = 0; y < 8; y++)
+        {
             if (board[y][x] === null)
+            {
+                continue;
+            }
+            else if (getColor(board[y][x]) === 'black')
             {
                 continue;
             }
@@ -1906,7 +2116,7 @@ function updateWhite(board)
                     updateKnight(x, y, boolBoard);
                     break;
                 case ('bishop'):
-                    updateBishop(x, y, boolBoard);
+                    updateBishop(x, y, boolBoard, board);
                     break;
                 case ('rook'):
                     updateRook(x, y, boolBoard);
@@ -1914,6 +2124,8 @@ function updateWhite(board)
                 case ('queen'):
                     updateRook(x, y, boolBoard);
                     updateBishop(x, y, boolBoard);
+                case ('king'):
+                    updateKing(x, y, boolBoard);
             }
         }
     }
@@ -1927,7 +2139,18 @@ function updateBlack(board)
     {
         for (let y = 0; y < 8; y++)
         {
+            boolBoard[y][x] = false;
+        }
+    }
+    for (let x = 0; x < 8; x++)
+    {
+        for (let y = 0; y < 8; y++)
+        {
             if (board[y][x] === null)
+            {
+                continue;
+            }
+            else if (getColor(board[y][x]) === 'white')
             {
                 continue;
             }
@@ -1940,7 +2163,7 @@ function updateBlack(board)
                     updateKnight(x, y, boolBoard);
                     break;
                 case ('bishop'):
-                    updateBishop(x, y, boolBoard);
+                    updateBishop(x, y, boolBoard, board);
                     break;
                 case ('rook'):
                     updateRook(x, y, boolBoard);
@@ -2019,47 +2242,47 @@ function updateKnight(x, y, board)
     }
 }
 
-function updateBishop(x, y, board)
+function updateBishop(x, y, boolBoard, pieceBoard)
 {
     for (let i = 1; x + i < 8 && y + i < 8; i++)
     {
-        board[y + i][x + i] = true;
-        if (board[y + i][x + i] !== null)
+        boolBoard[y + i][x + i] = true;
+        if (pieceBoard[y + i][x + i] !== null)
         {
             break;
         }
     }
     for (let i = 1; x - i >= 0 && y - i >= 0; i++)
     {
-        board[y - i][x - i] = true;
-        if (board[y - i][x - i] !== null)
+        boolBoard[y - i][x - i] = true;
+        if (pieceBoard[y - i][x - i] !== null)
         {
             break;
         }
     }
     for (let i = 1; x - i >= 0 && y + i < 8; i++)
     {
-        board[y + i][x - i] = true;
-        if (board[y + i][x - i] !== null)
+        boolBoard[y + i][x - i] = true;
+        if (pieceBoard[y + i][x - i] !== null)
         {
             break;
         }
     }
     for (let i = 1; x + i < 8 && y - i >= 0; i++)
     {
-        board[y - i][x + i] = true;
-        if (board[y - i][x + i] !== null)
+        boolBoard[y - i][x + i] = true;
+        if (pieceBoard[y - i][x + i] !== null)
         {
             break;
         }
     }
 }
 
-function updateRook(x, y, board)
+function updateRook(x, y, boolBoard)
 {
     for (let i = 1; x + i < 8; i++)
     {
-        board[y][x + i] = true;
+        boolBoard[y][x + i] = true;
         if (board[y][x + i] !== null)
         {
             break;
@@ -2067,7 +2290,7 @@ function updateRook(x, y, board)
     }
     for (let i = 1; x - i >= 0; i++)
     {
-        board[y][x - i] = true;
+        boolBoard[y][x - i] = true;
         if (board[y][x - i] !== null)
         {
             break;
@@ -2075,7 +2298,7 @@ function updateRook(x, y, board)
     }
     for (let i = 1; y + i < 8; i++)
     {
-        board[y + i][x] = true;
+        boolBoard[y + i][x] = true;
         if (board[y + i][x] !== null)
         {
             break;
@@ -2083,7 +2306,7 @@ function updateRook(x, y, board)
     }
     for (let i = 1; y - i >= 0; i++)
     {
-        board[y - i][x] = true;
+        boolBoard[y - i][x] = true;
         if (board[y - i][x] !== null)
         {
             break;
@@ -2113,7 +2336,7 @@ function updateKing(x, y, board)
     {
         board[y + 1][x] = true;
     }
-    if (y - 1 < 8)
+    if (y - 1 >= 0)
     {
         board[y - 1][x] = true;
     }
@@ -2121,9 +2344,9 @@ function updateKing(x, y, board)
     {
         board[y][x + 1] = true;
     }
-    if (x + 1 >= 0)
+    if (x - 1 >= 0)
     {
-        board[y][x + 1] = true;
+        board[y][x - 1] = true;
     }
 }
 
