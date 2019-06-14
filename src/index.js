@@ -70,16 +70,24 @@ window.addEventListener('load', (e) => {
         });
     });
     updateControls();
-    setInterval(() => {
-        if (check !== null)
+    let loop = setInterval(() => {
+        if (inCheck)
         {
-            g.removeChild(check);
-            check = null;
+            if (isCheckmate())
+            {
+                alert('Game Over!\n' + (moveColor === 'white' ? "Black" : "White") + ' wins!');
+                clearInterval(loop);
+            }
         }
         if (moveColor === 'white')
         {
             if (blackControl[whiteKing.y][whiteKing.x])
             {
+                if (check !== null)
+                {
+                    g.removeChild(check);
+                    check = null;
+                }
                 let checkCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 checkCircle.setAttribute('cx', whiteKing.x * 50 + 25);
                 checkCircle.setAttribute('cy', whiteKing.y * 50 + 25);
@@ -108,6 +116,11 @@ window.addEventListener('load', (e) => {
         {
             if (whiteControl[blackKing.y][blackKing.x])
             {
+                if (check !== null)
+                {
+                    g.removeChild(check);
+                    check = null;
+                }
                 let checkCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 checkCircle.setAttribute('cx', blackKing.x * 50 + 25);
                 checkCircle.setAttribute('cy', blackKing.y * 50 + 25);
@@ -137,7 +150,7 @@ window.addEventListener('load', (e) => {
             board[moveColor === 'white' ? whiteKing.y : blackKing.y][moveColor === 'white' ? whiteKing.x : blackKing.x].dispatchEvent(clickEvent);
             clickEvent = null;
         }
-    }, 200);
+    }, 250);
 });
 
 document.addEventListener('click', (e) => {
@@ -208,7 +221,7 @@ function showPawn(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x + 25);
             moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             if (y/50 === (up ? 1 : 6))
@@ -294,7 +307,7 @@ function showPawn(x, y, color)
                 let moveLocation2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 moveLocation2.setAttribute('cx', x + 25);
                 moveLocation2.setAttribute('cy', 25 + (up ? y - 100 : y + 100));
-                moveLocation2.setAttribute('r', 12);
+                moveLocation2.setAttribute('r', 13);
                 moveLocation2.setAttribute('class', 'moveLocation');
                 moveLocation2.setAttribute('onclick', '"event.stopPropogation()"');
                 moveLocation2.addEventListener('click', (e) => {
@@ -341,7 +354,7 @@ function showPawn(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x + 75);
             moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             if (y/50 === (up ? 1 : 6))
@@ -432,7 +445,7 @@ function showPawn(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x - 25);
             moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             if (y/50 === (up ? 1 : 6))
@@ -523,7 +536,7 @@ function showPawn(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x - 25);
             moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -572,7 +585,7 @@ function showPawn(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x + 75);
             moveLocation.setAttribute('cy', 25 + (up ? y - 50 : y + 50));
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -624,7 +637,7 @@ function showKnight(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x + 75);
             moveLocation.setAttribute('cy', y + 125);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -675,7 +688,7 @@ function showKnight(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x - 25);
             moveLocation.setAttribute('cy', y - 75);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -726,7 +739,7 @@ function showKnight(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x - 25);
             moveLocation.setAttribute('cy', y + 125);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -777,7 +790,7 @@ function showKnight(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x + 75);
             moveLocation.setAttribute('cy', y - 75);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -828,7 +841,7 @@ function showKnight(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x + 125);
             moveLocation.setAttribute('cy', y + 75);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -879,7 +892,7 @@ function showKnight(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x - 75);
             moveLocation.setAttribute('cy', y - 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -930,7 +943,7 @@ function showKnight(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x + 125);
             moveLocation.setAttribute('cy', y - 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropagation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -981,7 +994,7 @@ function showKnight(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x - 75);
             moveLocation.setAttribute('cy', y + 75);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1040,7 +1053,7 @@ function showRook(x, y, color)
                     let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                     moveLocation.setAttribute('cx', i * 50 + 25);
                     moveLocation.setAttribute('cy', y * 50 + 25);
-                    moveLocation.setAttribute('r', 12);
+                    moveLocation.setAttribute('r', 13);
                     moveLocation.setAttribute('class', 'moveLocation');
                     moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                     moveLocation.addEventListener('click', (e) => {
@@ -1109,7 +1122,7 @@ function showRook(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', i * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1181,7 +1194,7 @@ function showRook(x, y, color)
                     let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                     moveLocation.setAttribute('cx', i * 50 + 25);
                     moveLocation.setAttribute('cy', y * 50 + 25);
-                    moveLocation.setAttribute('r', 12);
+                    moveLocation.setAttribute('r', 13);
                     moveLocation.setAttribute('class', 'moveLocation');
                     moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                     moveLocation.addEventListener('click', (e) => {
@@ -1250,7 +1263,7 @@ function showRook(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', i * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1322,7 +1335,7 @@ function showRook(x, y, color)
                     let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                     moveLocation.setAttribute('cx', x * 50 + 25);
                     moveLocation.setAttribute('cy', i * 50 + 25);
-                    moveLocation.setAttribute('r', 12);
+                    moveLocation.setAttribute('r', 13);
                     moveLocation.setAttribute('class', 'moveLocation');
                     moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                     moveLocation.addEventListener('click', (e) => {
@@ -1391,7 +1404,7 @@ function showRook(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x * 50 + 25);
             moveLocation.setAttribute('cy', i * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1463,7 +1476,7 @@ function showRook(x, y, color)
                     let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                     moveLocation.setAttribute('cx', x * 50 + 25);
                     moveLocation.setAttribute('cy', i * 50 + 25);
-                    moveLocation.setAttribute('r', 12);
+                    moveLocation.setAttribute('r', 13);
                     moveLocation.setAttribute('class', 'moveLocation');
                     moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
                     moveLocation.addEventListener('click', (e) => {
@@ -1532,7 +1545,7 @@ function showRook(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x * 50 + 25);
             moveLocation.setAttribute('cy', i * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1581,57 +1594,6 @@ function showBishop(x, y, color)
 {
     for (let i = 1; y + i < 8 && x + i < 8; i++)
     {
-        if (board[y + i][x + i] !== null)
-        {
-            if (getColor(board[y + i][x + i]) !== color)
-            {
-                let skip = false;
-                let boardCopy = Array.from(board, (element) => Array.from(element));
-                boardCopy[y + i][x + i] = boardCopy[y][x];
-                boardCopy[y][x] = null;
-                if (color === 'white')
-                {
-                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                    {
-                        skip = true;
-                    }
-                }
-                else
-                {
-                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                    {
-                        skip = true;
-                    }
-                }
-                if (!skip)
-                {
-                    let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    moveLocation.setAttribute('cx', (x + i) * 50 + 25);
-                    moveLocation.setAttribute('cy', (y + i) * 50 + 25);
-                    moveLocation.setAttribute('r', 12);
-                    moveLocation.setAttribute('class', 'moveLocation');
-                    moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
-                    moveLocation.addEventListener('click', (e) => {
-                        shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
-                        shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
-                        for (let i = 0; i < shownLocations.length;)
-                        {
-                            g.removeChild(shownLocations.shift());
-                        }
-                        g.removeChild(board[y + i][x + i]);
-                        board[y + i][x + i] = board[y][x];
-                        board[y][x] = null;
-                        moveColor = moveColor === 'white' ? 'black' : 'white';
-                        epMove.x = -1;
-                        epMove.y = -1;
-                        updateControls();
-                    });
-                    g.appendChild(moveLocation);
-                    shownLocations.push(moveLocation);
-                }
-            }
-            break;
-        }
         let skip = false;
         let boardCopy = Array.from(board, (element) => Array.from(element));
         boardCopy[y + i][x + i] = boardCopy[y][x];
@@ -1652,10 +1614,40 @@ function showBishop(x, y, color)
         }
         if (!skip)
         {
+            if (board[y + i][x + i] !== null)
+            {
+                if (getColor(board[y + i][x + i]) !== color)
+                {
+                    let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    moveLocation.setAttribute('cx', (x + i) * 50 + 25);
+                    moveLocation.setAttribute('cy', (y + i) * 50 + 25);
+                    moveLocation.setAttribute('r', 13);
+                    moveLocation.setAttribute('class', 'moveLocation');
+                    moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                    moveLocation.addEventListener('click', (e) => {
+                        shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                        shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                        for (let i = 0; i < shownLocations.length;)
+                        {
+                            g.removeChild(shownLocations.shift());
+                        }
+                        g.removeChild(board[y + i][x + i]);
+                        board[y + i][x + i] = board[y][x];
+                        board[y][x] = null;
+                        moveColor = moveColor === 'white' ? 'black' : 'white';
+                        epMove.x = -1;
+                        epMove.y = -1;
+                        updateControls();
+                    });
+                    g.appendChild(moveLocation);
+                    shownLocations.push(moveLocation);
+                }
+                break;
+            }
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + i) * 50 + 25);
             moveLocation.setAttribute('cy', (y + i) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1678,57 +1670,6 @@ function showBishop(x, y, color)
     }
     for (let i = 1; y - i >= 0 && x - i >= 0; i++)
     {
-        if (board[y - i][x - i] !== null)
-        {
-            if (getColor(board[y - i][x - i]) !== color)
-            {
-                let skip = false;
-                let boardCopy = Array.from(board, (element) => Array.from(element));
-                boardCopy[y - i][x - i] = boardCopy[y][x];
-                boardCopy[y][x] = null;
-                if (color === 'white')
-                {
-                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                    {
-                        skip = true;
-                    }
-                }
-                else
-                {
-                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                    {
-                        skip = true;
-                    }
-                }
-                if (!skip)
-                {
-                    let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    moveLocation.setAttribute('cx', (x - i) * 50 + 25);
-                    moveLocation.setAttribute('cy', (y - i) * 50 + 25);
-                    moveLocation.setAttribute('r', 12);
-                    moveLocation.setAttribute('class', 'moveLocation');
-                    moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
-                    moveLocation.addEventListener('click', (e) => {
-                        shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
-                        shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
-                        for (let i = 0; i < shownLocations.length;)
-                        {
-                            g.removeChild(shownLocations.shift());
-                        }
-                        g.removeChild(board[y - i][x - i]);
-                        board[y - i][x - i] = board[y][x];
-                        board[y][x] = null;
-                        moveColor = moveColor === 'white' ? 'black' : 'white';
-                        epMove.x = -1;
-                        epMove.y = -1;
-                        updateControls();
-                    });
-                    g.appendChild(moveLocation);
-                    shownLocations.push(moveLocation);
-                }
-            }
-            break;
-        }
         let skip = false;
         let boardCopy = Array.from(board, (element) => Array.from(element));
         boardCopy[y - i][x - i] = boardCopy[y][x];
@@ -1749,10 +1690,40 @@ function showBishop(x, y, color)
         }
         if (!skip)
         {
+            if (board[y - i][x - i] !== null)
+            {
+                if (getColor(board[y - i][x - i]) !== color)
+                {
+                    let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    moveLocation.setAttribute('cx', (x - i) * 50 + 25);
+                    moveLocation.setAttribute('cy', (y - i) * 50 + 25);
+                    moveLocation.setAttribute('r', 13);
+                    moveLocation.setAttribute('class', 'moveLocation');
+                    moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                    moveLocation.addEventListener('click', (e) => {
+                        shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                        shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                        for (let i = 0; i < shownLocations.length;)
+                        {
+                            g.removeChild(shownLocations.shift());
+                        }
+                        g.removeChild(board[y - i][x - i]);
+                        board[y - i][x - i] = board[y][x];
+                        board[y][x] = null;
+                        moveColor = moveColor === 'white' ? 'black' : 'white';
+                        epMove.x = -1;
+                        epMove.y = -1;
+                        updateControls();
+                    });
+                    g.appendChild(moveLocation);
+                    shownLocations.push(moveLocation);
+                }
+                break;
+            }
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - i) * 50 + 25);
             moveLocation.setAttribute('cy', (y - i) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1775,57 +1746,6 @@ function showBishop(x, y, color)
     }
     for (let i = 1; y + i < 8 && x - i >= 0; i++)
     {
-        if (board[y + i][x - i] !== null)
-        {
-            if (getColor(board[y + i][x - i]) !== color)
-            {
-                let skip = false;
-                let boardCopy = Array.from(board, (element) => Array.from(element));
-                boardCopy[y + i][x - i] = boardCopy[y][x];
-                boardCopy[y][x] = null;
-                if (color === 'white')
-                {
-                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                    {
-                        skip = true;
-                    }
-                }
-                else
-                {
-                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                    {
-                        skip = true;
-                    }
-                }
-                if (!skip)
-                {
-                    let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    moveLocation.setAttribute('cx', (x - i) * 50 + 25);
-                    moveLocation.setAttribute('cy', (y + i) * 50 + 25);
-                    moveLocation.setAttribute('r', 12);
-                    moveLocation.setAttribute('class', 'moveLocation');
-                    moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
-                    moveLocation.addEventListener('click', (e) => {
-                        shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
-                        shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
-                        for (let i = 0; i < shownLocations.length;)
-                        {
-                            g.removeChild(shownLocations.shift());
-                        }
-                        g.removeChild(board[y + i][x - i]);
-                        board[y + i][x - i] = board[y][x];
-                        board[y][x] = null;
-                        moveColor = moveColor === 'white' ? 'black' : 'white';
-                        epMove.x = -1;
-                        epMove.y = -1;
-                        updateControls();
-                    });
-                    g.appendChild(moveLocation);
-                    shownLocations.push(moveLocation);
-                }
-            }
-            break;
-        }
         let skip = false;
         let boardCopy = Array.from(board, (element) => Array.from(element));
         boardCopy[y + i][x - i] = boardCopy[y][x];
@@ -1846,10 +1766,40 @@ function showBishop(x, y, color)
         }
         if (!skip)
         {
+            if (board[y + i][x - i] !== null)
+            {
+                if (getColor(board[y + i][x - i]) !== color)
+                {
+                    let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    moveLocation.setAttribute('cx', (x - i) * 50 + 25);
+                    moveLocation.setAttribute('cy', (y + i) * 50 + 25);
+                    moveLocation.setAttribute('r', 13);
+                    moveLocation.setAttribute('class', 'moveLocation');
+                    moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                    moveLocation.addEventListener('click', (e) => {
+                        shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                        shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                        for (let i = 0; i < shownLocations.length;)
+                        {
+                            g.removeChild(shownLocations.shift());
+                        }
+                        g.removeChild(board[y + i][x - i]);
+                        board[y + i][x - i] = board[y][x];
+                        board[y][x] = null;
+                        moveColor = moveColor === 'white' ? 'black' : 'white';
+                        epMove.x = -1;
+                        epMove.y = -1;
+                        updateControls();
+                    });
+                    g.appendChild(moveLocation);
+                    shownLocations.push(moveLocation);
+                }
+                break;
+            }
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - i) * 50 + 25);
             moveLocation.setAttribute('cy', (y + i) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1872,57 +1822,6 @@ function showBishop(x, y, color)
     }
     for (let i = 1; y - i >= 0 && x + i < 8; i++)
     {
-        if (board[y - i][x + i] !== null)
-        {
-            if (getColor(board[y - i][x + i]) !== color)
-            {
-                let skip = false;
-                let boardCopy = Array.from(board, (element) => Array.from(element));
-                boardCopy[y - i][x + i] = boardCopy[y][x];
-                boardCopy[y][x] = null;
-                if (color === 'white')
-                {
-                    if (updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
-                    {
-                        skip = true;
-                    }
-                }
-                else
-                {
-                    if (updateWhite(boardCopy)[blackKing.y][blackKing.x])
-                    {
-                        skip = true;
-                    }
-                }
-                if (!skip)
-                {
-                    let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    moveLocation.setAttribute('cx', (x + i) * 50 + 25);
-                    moveLocation.setAttribute('cy', (y - i) * 50 + 25);
-                    moveLocation.setAttribute('r', 12);
-                    moveLocation.setAttribute('class', 'moveLocation');
-                    moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
-                    moveLocation.addEventListener('click', (e) => {
-                        shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
-                        shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
-                        for (let i = 0; i < shownLocations.length;)
-                        {
-                            g.removeChild(shownLocations.shift());
-                        }
-                        g.removeChild(board[y - i][x + i]);
-                        board[y - i][x + i] = board[y][x];
-                        board[y][x] = null;
-                        moveColor = moveColor === 'white' ? 'black' : 'white';
-                        epMove.x = -1;
-                        epMove.y = -1;
-                        updateControls();
-                    });
-                    g.appendChild(moveLocation);
-                    shownLocations.push(moveLocation);
-                }
-            }
-            break;
-        }
         let skip = false;
         let boardCopy = Array.from(board, (element) => Array.from(element));
         boardCopy[y - i][x + i] = boardCopy[y][x];
@@ -1943,10 +1842,40 @@ function showBishop(x, y, color)
         }
         if (!skip)
         {
+            if (board[y - i][x + i] !== null)
+            {
+                if (getColor(board[y - i][x + i]) !== color)
+                {
+                    let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    moveLocation.setAttribute('cx', (x + i) * 50 + 25);
+                    moveLocation.setAttribute('cy', (y - i) * 50 + 25);
+                    moveLocation.setAttribute('r', 13);
+                    moveLocation.setAttribute('class', 'moveLocation');
+                    moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
+                    moveLocation.addEventListener('click', (e) => {
+                        shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                        shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
+                        for (let i = 0; i < shownLocations.length;)
+                        {
+                            g.removeChild(shownLocations.shift());
+                        }
+                        g.removeChild(board[y - i][x + i]);
+                        board[y - i][x + i] = board[y][x];
+                        board[y][x] = null;
+                        moveColor = moveColor === 'white' ? 'black' : 'white';
+                        epMove.x = -1;
+                        epMove.y = -1;
+                        updateControls();
+                    });
+                    g.appendChild(moveLocation);
+                    shownLocations.push(moveLocation);
+                }
+                break;
+            }
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + i) * 50 + 25);
             moveLocation.setAttribute('cy', (y - i) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -1996,7 +1925,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
             moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2055,7 +1984,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
             moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2113,7 +2042,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
             moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2172,7 +2101,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
             moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2230,7 +2159,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
             moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2289,7 +2218,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
             moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2347,7 +2276,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
             moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2406,7 +2335,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
             moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2464,7 +2393,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x * 50 + 25);
             moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2523,7 +2452,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x * 50 + 25);
             moveLocation.setAttribute('cy', (y + 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2581,7 +2510,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x * 50 + 25);
             moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2640,7 +2569,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', x * 50 + 25);
             moveLocation.setAttribute('cy', (y - 1) * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2698,7 +2627,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2757,7 +2686,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + 1) * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2815,7 +2744,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2874,7 +2803,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - 1) * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2916,7 +2845,7 @@ function showKing(x, y, color)
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x - 2) * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
@@ -2941,28 +2870,30 @@ function showKing(x, y, color)
                     kingMoved.white = true;
                     whiteKing.x = x - 2;
                     whiteKing.y = y;
+                    rookMoved.wLeft = true;
                 }
                 else
                 {
                     kingMoved.black = true;
                     blackKing.x = x - 2;
                     blackKing.y = y;
+                    rookMoved.bLeft = true;
                 }
             });
             g.appendChild(moveLocation);
             shownLocations.push(moveLocation);
-        }
-        moved = color === 'white' ? rookMoved.wRight : rookMoved.bRight;
+        }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+        moved = (color === 'white' ? rookMoved.wRight : rookMoved.bRight) || (color === 'white' ? kingMoved.white : kingMoved.black);
         if (!moved && board[color === 'white' ? 7 : 0][5] === null && board[color === 'white' ? 7 : 0][6] === null)
         {
             let moveLocation = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             moveLocation.setAttribute('cx', (x + 2) * 50 + 25);
             moveLocation.setAttribute('cy', y * 50 + 25);
-            moveLocation.setAttribute('r', 12);
+            moveLocation.setAttribute('r', 13);
             moveLocation.setAttribute('class', 'moveLocation');
             moveLocation.setAttribute('onclick', '"event.stopPropogation()"');
             moveLocation.addEventListener('click', (e) => {
-                shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);
+                shownPiece.setAttribute('x', moveLocation.getAttribute('cx') - 25);x
                 shownPiece.setAttribute('y', moveLocation.getAttribute('cy') - 25);
                 for (let i = 0; i < shownLocations.length;)
                 {
@@ -2972,7 +2903,7 @@ function showKing(x, y, color)
                 rook.setAttribute('x', (x + 1) * 50);
                 board[y][x + 2] = board[y][x];
                 board[y][x + 1] = rook;
-                board[y][x = null];
+                board[y][x] = null;
                 board[color === 'white' ? 7 : 0][7] = null;
                 moveColor = moveColor === 'white' ? 'black' : 'white';
                 epMove.x = -1;
@@ -2983,12 +2914,14 @@ function showKing(x, y, color)
                     kingMoved.white = true;
                     whiteKing.x = x + 2;
                     whiteKing.y = y;
+                    rookMoved.wRight = true;
                 }
                 else
                 {
                     kingMoved.black = true;
                     blackKing.x = x + 2;
                     blackKing.y = y;
+                    rookMoved.bRight = true;
                 }
             });
             g.appendChild(moveLocation);
@@ -3452,4 +3385,958 @@ function init()
     g.appendChild(blackPiece);
     board[0][3] = blackPiece;
     board[7][3] = whitePiece;
+}
+
+function isCheckmate()
+{
+    for (let x = 0; x < 8; x++)
+    {
+        for (let y = 0; y < 8; y++)
+        {
+            if (board[y][x] !== null && getColor(board[y][x]) === moveColor)
+            {
+                switch (getPiece(board[y][x]))
+                {
+                    case ('pawn'):
+                        if (tryPawn(x, y, moveColor))
+                        {
+                            console.log('pawn');
+                            return false;
+                        }
+                        break;
+                    case ('knight'):
+                        if (tryKnight(x, y, moveColor))
+                        {
+                            console.log('knight');
+                            return false;
+                        }
+                        break;
+                    case ('bishop'):
+                        if (tryBishop(x, y, moveColor))
+                        {
+                            console.log('bishop');
+                            return false;
+                        }
+                        break;
+                    case ('rook'):
+                        if (tryRook(x, y, moveColor))
+                        {
+                            console.log('rook');
+                            return false;
+                        }
+                        break;
+                    case ('queen'):
+                        if (tryBishop(x, y, moveColor) || tryRook(x, y, moveColor))
+                        {
+                            console.log('queen');
+                            return false;
+                        }
+                        break;
+                    case ('king'):
+                        if (tryKing(x, y, moveColor))
+                        {
+                            console.log('king');
+                            return false;
+                        }
+                }
+            }
+        }
+    }
+    return true;
+}
+
+function tryPawn(x, y, color)
+{
+    let up = color === 'white';
+    if (board[up ? y - 1 : y + 1][x] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y - 1 : y + 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (up)
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                console.log('up1', x, y);
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                console.log('up1', x, y);
+                return true;
+            }
+        }
+        if (board[up ? y - 2 : y + 2][x] === null)
+        {
+            boardCopy = Array.from(board, (element) => Array.from(element));
+            boardCopy[up ? y - 2 : y + 2][x] = boardCopy[y][x];
+            boardCopy[y][x] = null;
+            if (up)
+            {
+                if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+                {
+                    console.log('up2', x, y);
+                    return true;
+                }
+            }
+            else
+            {
+                if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+                {
+                    console.log('up2', x, y);
+                    return true;
+                }
+            }
+        }
+    }
+    if (x + 1 < 8 && board[up ? y - 1 : y + 1][x + 1] !== null && getColor(board[up ? y - 1 : y + 1][x + 1]) !== color)
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y - 1 : y + 1][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (up)
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                console.log('up1right1', x, y);
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                console.log('up1right1', x, y);
+                return true;
+            }
+        }
+    }
+    if (x - 1 >= 0 && board[up ? y - 1 : y + 1][x - 1] !== null && getColor(board[up ? y - 1 : y + 1][x - 1]) !== color)
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y - 1 : y + 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (up)
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                console.log('up1left1', x, y);
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                console.log('up1left1', x, y);
+                return true;
+            }
+        }
+    }
+    if (epMove.x === x - 1 && epMove.y === y && board[up ? y - 1 : y + 1][x - 1] === null)
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y - 1 : y + 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        boardCopy[y][x - 1] = null;
+        if (up)
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                console.log('epleft', x, y);
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                console.log('epleft', x, y);
+                return true;
+            }
+        }
+    }
+    if (epMove.x === x + 1 && epMove.y === y && board[up ? y - 1 : y + 1][x + 1] == null)
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[up ? y - 1 : y + 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        boardCopy[y][x + 1] = null;
+        if (up)
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                console.log('epright', x, y);
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                console.log('epright', x, y);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function tryKnight(x, y, color)
+{
+    if ((y <= 5 && x <= 6) && (board[y + 2][x + 1] === null || getColor(board[y + 2][x + 1]) !== color))
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 2][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if ((y >= 2 && x >= 1) && (board[y - 2][x - 1] === null || getColor(board[y - 2][x - 1]) !== color))
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 2][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if ((y <= 5 && x >= 1) && (board[y + 2][x - 1] === null || getColor(board[y + 2][x - 1]) !== color))
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 2][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if ((y >= 2 && x <= 6) && (board[y - 2][x + 1] === null || getColor(board[y - 2][x + 1]) !== color))
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 2][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if ((y <= 6 && x <= 5) && (board[y + 1][x + 2] === null || getColor(board[y + 1][x + 2]) !== color))
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x + 2] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if ((y >= 1 && x >= 2) && (board[y - 1][x - 2] === null || getColor(board[y - 1][x - 2]) !== color))
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x - 2] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if ((y >= 1 && x <= 5) && (board[y - 1][x + 2] === null || getColor(board[y - 1][x + 2]) !== color))
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x + 2] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if ((y <= 6 && x >= 2) && (board[y + 1][x - 2] === null || getColor(board[y + 1][x - 2]) !== color))
+    {
+        boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x - 2] = boardCopy[y][x];
+        boardCopy[y][XMLHttpRequestUpload] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function tryBishop(x, y, color)
+{
+    for (let i = 1; y + i < 8 && x + i < 8; i++)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + i][x + i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    for (let i = 1; y - i >= 0 && x - i >= 0; i++)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - i][x - i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    for (let i = 1; y + i < 8 && x - i >= 0; i++)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + i][x - i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    for (let i = 1; y - i >= 0 && x + i < 8; i++)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - i][x + i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function tryRook(x, y, color)
+{
+    for (let i = x + 1; i < 8; i++)
+    {
+        if (board[y][i] !== null)
+        {
+            if (getColor(board[y][i]) !== color)
+            {
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[y][i] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
+                {
+                    if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+                    {
+                        return true;
+                    }
+                }
+            }
+            break;
+        }
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    for (let i = x - 1; i >= 0; i--)
+    {
+        if (board[y][i] !== null)
+        {
+            if (getColor(board[y][i]) !== color)
+            {
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[y][i] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
+                {
+                    if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+                    {
+                        return true;
+                    }
+                }
+            }
+            break;
+        }
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][i] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    for (let i = y + 1; i < 8; i++)
+    {
+        if (board[i][x] !== null)
+        {
+            if (getColor(board[i][x]) !== color)
+            {
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[i][x] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
+                {
+                    if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+                    {
+                        return true;
+                    }
+                }
+            }
+            break;
+        }
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[i][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    for (let i = y - 1; i >= 0; i--)
+    {
+        if (board[i][x] !== null)
+        {
+            if (getColor(board[i][x]) !== color)
+            {
+                let boardCopy = Array.from(board, (element) => Array.from(element));
+                boardCopy[i][x] = boardCopy[y][x];
+                boardCopy[y][x] = null;
+                if (color === 'white')
+                {
+                    if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+                    {
+                        return true;
+                    }
+                }
+            }
+            break;
+        }
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[i][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function tryKing(x, y, color)
+{
+    if (y + 1 < 8 && x + 1 < 8 && board[y + 1][x + 1] !== null && getColor(board[y + 1][x + 1]) !== color)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x + 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y + 1][blackKing.x + 1])
+            {
+                return true;
+            }
+        }
+    }
+    else if (y + 1 < 8 && x + 1 < 8 && board[y + 1][x + 1] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x + 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y + 1][blackKing.x + 1])
+            {
+                return true;
+            }
+        }
+    }
+    if (y - 1 >= 0 && x - 1 >= 0 && board[y - 1][x - 1] !== null && getColor(board[y - 1][x - 1]) !== color)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
+            {
+                return true;
+            }
+        }
+    }
+    else if (y - 1 >= 0 && x - 1 >= 0 && board[y - 1][x - 1] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
+            {
+                return true;
+            }
+        }
+    }
+    if (y - 1 >= 0 && x + 1 < 8 && board[y - 1][x + 1] !== null && getColor(board[y - 1][x + 1]) !== color)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x - 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y - 1][blackKing.x - 1])
+            {
+                return true;
+            }
+        }
+    }
+    else if (y - 1 >= 0 && x + 1 < 8 && board[y - 1][x + 1] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x + 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y - 1][blackKing.x + 1])
+            {
+                return true;
+            }
+        }
+    }
+    if (y + 1 < 8 && x - 1 >= 0 && board[y + 1][x - 1] !== null && getColor(board[y + 1][x - 1]) !== color)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x - 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y + 1][blackKing.x - 1])
+            {
+                return true;
+            }
+        }
+    }
+    else if (y + 1 < 8 && x - 1 >= 0 && board[y + 1][x - 1] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x - 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y + 1][blackKing.x - 1])
+            {
+                return true;
+            }
+        }
+    }
+    if (y + 1 < 8 && board[y + 1][x] !== null && getColor(board[y + 1][x]) !== color)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y + 1][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    else if (y + 1 < 8 && board[y + 1][x] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y + 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y + 1][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y + 1][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if (y - 1 >= 0 && board[y - 1][x] !== null && getColor(board[y - 1][x]) !== color)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y - 1][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    else if (y - 1 >= 0 && board[y - 1][x] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y - 1][x] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y - 1][whiteKing.x])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y - 1][blackKing.x])
+            {
+                return true;
+            }
+        }
+    }
+    if (x + 1 < 8 && board[y][x + 1] !== null && getColor(board[y][x + 1]) !== color)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x + 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x + 1])
+            {
+                return true;
+            }
+        }
+    }
+    else if (x + 1 < 8 && board[y][x + 1] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][x + 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x + 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x + 1])
+            {
+                return true;
+            }
+        }
+    }
+    if (x - 1 >= 0 && board[y][x - 1] !== null && getColor(board[y][x - 1]) !== color)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x - 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x - 1])
+            {
+                return true;
+            }
+        }
+    }
+    else if (x - 1 >= 0 && board[y][x - 1] === null)
+    {
+        let boardCopy = Array.from(board, (element) => Array.from(element));
+        boardCopy[y][x - 1] = boardCopy[y][x];
+        boardCopy[y][x] = null;
+        if (color === 'white')
+        {
+            if (!updateBlack(boardCopy)[whiteKing.y][whiteKing.x - 1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (!updateWhite(boardCopy)[blackKing.y][blackKing.x - 1])
+            {
+                return true;
+            }
+        }
+    }
+    return false;
 }
